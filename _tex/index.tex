@@ -119,39 +119,6 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
-% definitions for citeproc citations
-\NewDocumentCommand\citeproctext{}{}
-\NewDocumentCommand\citeproc{mm}{%
-  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
-\makeatletter
- % allow citations to break across lines
- \let\@cite@ofmt\@firstofone
- % avoid brackets around text for \cite:
- \def\@biblabel#1{}
- \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
-\makeatother
-\newlength{\cslhangindent}
-\setlength{\cslhangindent}{1.5em}
-\newlength{\csllabelwidth}
-\setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
- {\begin{list}{}{%
-  \setlength{\itemindent}{0pt}
-  \setlength{\leftmargin}{0pt}
-  \setlength{\parsep}{0pt}
-  % turn on hanging indent if param 1 is 1
-  \ifodd #1
-   \setlength{\leftmargin}{\cslhangindent}
-   \setlength{\itemindent}{-1\cslhangindent}
-  \fi
-  % set entry spacing
-  \setlength{\itemsep}{#2\baselineskip}}}
- {\end{list}}
-\usepackage{calc}
-\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
-\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{physics}
 \usepackage[version=3]{mhchem}
@@ -201,16 +168,6 @@
 \makeatother
 \usepackage[skip=2pt,font=footnotesize]{caption}
 %\captionsetup{format=myformat}
-\makeatletter
-%\setlength{\cslhangindent}{0pt plus .5pt}
-\providecommand{\bibfont}{\footnotesize}
-\let\CSLReferences@rig=\CSLReferences
-\renewcommand{\CSLReferences}[2]{
-\bibfont\settowidth\csllabelwidth{[999]}
-\CSLReferences@rig{#1}{#2}
-\vskip 0.3\baselineskip plus 0.1\baselineskip minus 0.1\baselineskip%
-}
-\makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -278,22 +235,11 @@ Norah Jones%
 
 \section{Section}\label{section}
 
-This is a simple placeholder for the manuscript's main document
-\citeproc{ref-knuth84}{{[}1{]}}.
+This is a simple placeholder for the manuscript's main document.
 
 And this is some more text!
 
-Run my dear!
-
-\phantomsection\label{refs}
-\begin{CSLReferences}{0}{0}
-\bibitem[\citeproctext]{ref-knuth84}
-\CSLLeftMargin{{[}1{]} }%
-\CSLRightInline{D. E. Knuth, {``Literate programming,''} \emph{Comput.
-J.}, vol. 27, no. 2, pp. 97--111, May 1984 {[}Online{]}. Available:
-\url{https://doi.org/10.1093/comjnl/27.2.97}}
-
-\end{CSLReferences}
+Run my dear!no
 
 
 % Can use something like this to put references on a page

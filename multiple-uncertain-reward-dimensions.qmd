@@ -14,8 +14,6 @@ abstract: |
   We consider augmenting multidimensional reward models with uncertainty estimates, and find that this modestly improves the performance of (previously) state-of-the-art baseline  model (ArmoRM). Along the way, we propose a new framework for preference learning inspired by optimal transport.
 plain-language-summary: |
   We consider augmenting multidimensional reward models with uncertainty estimates, and find modest improvements over the baseline ArmoRM model. Along the way, we propose a new framework for preference learning inspired by optimal transport.
-thanks: |
-  I began this work as a group project with Sijia Liu, but due to diverging interests we split this off as a separate project. All of the writing, results, and code presented here are my own.
 key-points: []
 date: last-modified
 bibliography: references.bib

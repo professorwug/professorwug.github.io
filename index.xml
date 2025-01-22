@@ -66,37 +66,14 @@ draft" vocab-term-identifier="https://credit.niso.org/contributor-roles/writing-
 <body>
 <sec id="section">
   <title>Section</title>
-  <p>This is a simple placeholder for the manuscript’s main document
-  (<xref alt="Knuth 1984" rid="ref-knuth84" ref-type="bibr">Knuth
-  1984</xref>).</p>
+  <p>This is a simple placeholder for the manuscript’s main
+  document.</p>
   <p>And this is some more text!</p>
-  <p>Run my dear!</p>
+  <p>Run my dear!no</p>
 </sec>
 </body>
 
 <back>
-<ref-list>
-  <title></title>
-  <ref id="ref-knuth84">
-    <element-citation publication-type="article-journal">
-      <person-group person-group-type="author">
-        <name><surname>Knuth</surname><given-names>Donald E.</given-names></name>
-      </person-group>
-      <article-title>Literate programming</article-title>
-      <source>Comput. J.</source>
-      <publisher-name>Oxford University Press, Inc.</publisher-name>
-      <publisher-loc>USA</publisher-loc>
-      <year iso-8601-date="1984-05">1984</year><month>05</month>
-      <volume>27</volume>
-      <issue>2</issue>
-      <issn>0010-4620</issn>
-      <uri>https://doi.org/10.1093/comjnl/27.2.97</uri>
-      <pub-id pub-id-type="doi">10.1093/comjnl/27.2.97</pub-id>
-      <fpage>97</fpage>
-      <lpage>111</lpage>
-    </element-citation>
-  </ref>
-</ref-list>
 </back>
 
 <sub-article article-type="notebook" id="nb-4-nb-1">
@@ -192,19 +169,20 @@ inspired by optimal transport.</p>
 <sec id="related-work-nb-1">
   <title>Related Work</title>
   <p>Standard Reinforcement Learning from Human Feedback (RLHF) follows
-  (<xref alt="Ouyang2022-Traininglanguagemodelsfollowinstructions?" rid="ref-Ouyang2022-Traininglanguagemodelsfollowinstructions-nb-1" ref-type="bibr"><bold>Ouyang2022-Traininglanguagemodelsfollowinstructions?</bold></xref>)
+  Ouyang et al.
+  (<xref alt="2022" rid="ref-Ouyang2022-Traininglanguagemodelsfollowinstructions-nb-1" ref-type="bibr">2022</xref>)
   in performing preference tuning on LLMs via a two-stage process:
   first, training a (scalar-valued) reward model on (binary) preference
   data using a Bradley-Terry objective; second, using a reinforcement
   learning algorithm like Proximal Policy Optimization to fine-tune the
   given LLM to maximize the learned reward function. This dual training
   can be finicky, motivating approaches like DPO
-  (<xref alt="Rafailov2024-DirectPreferenceOptimizationYourLanguageb?" rid="ref-Rafailov2024-DirectPreferenceOptimizationYourLanguageb-nb-1" ref-type="bibr"><bold>Rafailov2024-DirectPreferenceOptimizationYourLanguageb?</bold></xref>)
-  to shortcut the first stage by learning an <italic>implicit</italic>
-  reward model through directly training the LLM on preference data.
-  Alas, such implicit reward models can be especially sensitive to any
-  distribution shifts between the training data and real-world
-  applications.</p>
+  (<xref alt="Rafailov et al. 2024" rid="ref-Rafailov2024-DirectPreferenceOptimizationYourLanguageb-nb-1" ref-type="bibr">Rafailov
+  et al. 2024</xref>) to shortcut the first stage by learning an
+  <italic>implicit</italic> reward model through directly training the
+  LLM on preference data. Alas, such implicit reward models can be
+  especially sensitive to any distribution shifts between the training
+  data and real-world applications.</p>
   <p>Multi-dimensional reward modeling moves in the opposite direction
   by making the reward model from Stage 1 even more explicit. The
   dominant practice is to learn a collection of reward models, trained
@@ -212,44 +190,47 @@ inspired by optimal transport.</p>
   honesty, safety, coherence, reasoning, etc.) of valuable responses –
   and then ‘compress’ these dimensions into a scalar suitable for Stage
   2 optimization with a <italic>fixed</italic> weighted sum
-  (<xref alt="Ji2023-BeaverTailsImprovedSafetyAlignmentLLM?" rid="ref-Ji2023-BeaverTailsImprovedSafetyAlignmentLLM-nb-1" ref-type="bibr"><bold>Ji2023-BeaverTailsImprovedSafetyAlignmentLLM?</bold></xref>;
-  <xref alt="Wu-FineGrainedHumanFeedbackGivesBetter?" rid="ref-Wu-FineGrainedHumanFeedbackGivesBetter-nb-1" ref-type="bibr"><bold>Wu-FineGrainedHumanFeedbackGivesBetter?</bold></xref>;
-  <xref alt="Cui2024-UltraFeedbackBoostingLanguageModelsScaled?" rid="ref-Cui2024-UltraFeedbackBoostingLanguageModelsScaled-nb-1" ref-type="bibr"><bold>Cui2024-UltraFeedbackBoostingLanguageModelsScaled?</bold></xref>).
-  Some allow the sums’ weights to be changed to represent different
-  users’ preferences
-  (<xref alt="Wang2024-ArithmeticControlLLMsDiverseUser?" rid="ref-Wang2024-ArithmeticControlLLMsDiverseUser-nb-1" ref-type="bibr"><bold>Wang2024-ArithmeticControlLLMsDiverseUser?</bold></xref>).
-  The most sophisticated approaches use a dynamically-weighted sum based
-  on context, as in
-  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  (<xref alt="Ji et al. 2023" rid="ref-Ji2023-BeaverTailsImprovedSafetyAlignmentLLM-nb-1" ref-type="bibr">Ji
+  et al. 2023</xref>;
+  <xref alt="Wu et al., n.d." rid="ref-Wu-FineGrainedHumanFeedbackGivesBetter-nb-1" ref-type="bibr">Wu
+  et al., n.d.</xref>;
+  <xref alt="Cui et al. 2024" rid="ref-Cui2024-UltraFeedbackBoostingLanguageModelsScaled-nb-1" ref-type="bibr">Cui
+  et al. 2024</xref>). Some allow the sums’ weights to be changed to
+  represent different users’ preferences
+  (<xref alt="Wang, Lin, et al. 2024" rid="ref-Wang2024-ArithmeticControlLLMsDiverseUser-nb-1" ref-type="bibr">Wang,
+  Lin, et al. 2024</xref>). The most sophisticated approaches use a
+  dynamically-weighted sum based on context, as in Wang, Xiong, et al.
+  (<xref alt="2024" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr">2024</xref>)’s
   Absolute-Rating Multi-Objective Reward Model (ArmoRM), which we will
   discuss below.</p>
-  <p>Alternative approaches include
-  (<xref alt="Ethayarajh2024-KTOModelAlignmentProspectTheoretic?" rid="ref-Ethayarajh2024-KTOModelAlignmentProspectTheoretic-nb-1" ref-type="bibr"><bold>Ethayarajh2024-KTOModelAlignmentProspectTheoretic?</bold></xref>),
+  <p>Alternative approaches include Ethayarajh et al.
+  (<xref alt="2024" rid="ref-Ethayarajh2024-KTOModelAlignmentProspectTheoretic-nb-1" ref-type="bibr">2024</xref>),
   which adapts psychologists Amos Tversky and Daniel Kahneman’s Prospect
-  Theory to LLM alignment; and
-  (<xref alt="Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences?" rid="ref-Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences-nb-1" ref-type="bibr"><bold>Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences?</bold></xref>),
+  Theory to LLM alignment; and Chakraborty et al.
+  (<xref alt="2024" rid="ref-Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences-nb-1" ref-type="bibr">2024</xref>),
   who eschews the linear combination of rewards to learn directly from a
   collection of specialized reward models via an expectation
   maximization objective modeled after the Egalitarian Principle of
   social choice theory.</p>
   <p>Some have also investigated the intersection of uncertainty
-  estimation with reward modeling.
-  (<xref alt="Eisenstein2024-RewardModelEnsemblesMitigatenot?" rid="ref-Eisenstein2024-RewardModelEnsemblesMitigatenot-nb-1" ref-type="bibr"><bold>Eisenstein2024-RewardModelEnsemblesMitigatenot?</bold></xref>)
+  estimation with reward modeling. Eisenstein et al.
+  (<xref alt="2024" rid="ref-Eisenstein2024-RewardModelEnsemblesMitigatenot-nb-1" ref-type="bibr">2024</xref>)
   found that ensembling (scalar-valued) reward models improved
   robustness against reward hacking. A competing approach to uncertainty
   estimation, Epistemic Neural Networks
-  (<xref alt="Osband2023-EpistemicNeuralNetworks?" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr"><bold>Osband2023-EpistemicNeuralNetworks?</bold></xref>),
-  has been found useful in active learning: uncertainty-equipped reward
-  values can prioritize data in a fine-tuning corpus that best increases
-  LLM performance
-  (<xref alt="Dwaracherla2024-EfficientExplorationLLMs?" rid="ref-Dwaracherla2024-EfficientExplorationLLMs-nb-1" ref-type="bibr"><bold>Dwaracherla2024-EfficientExplorationLLMs?</bold></xref>).</p>
+  (<xref alt="Osband et al. 2023" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr">Osband
+  et al. 2023</xref>), has been found useful in active learning:
+  uncertainty-equipped reward values can prioritize data in a
+  fine-tuning corpus that best increases LLM performance
+  (<xref alt="Dwaracherla et al. 2024" rid="ref-Dwaracherla2024-EfficientExplorationLLMs-nb-1" ref-type="bibr">Dwaracherla
+  et al. 2024</xref>).</p>
 </sec>
 <sec id="armorm-nb-1">
   <title>ArmoRM</title>
   <p>For direct comparability with previous work, we build our
   uncertainty-aware reward model on top of what may be the most popular
-  multidimensional reward model,
-  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  multidimensional reward model, Wang, Xiong, et al.
+  (<xref alt="2024" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr">2024</xref>)’s
   “Absolute-Rating Multi-Objective Reward Model”. ArmoRM was, for a
   time, the best performing 8b parameter reward model and (at the time
   of release) performed competitively with 70b parameter
@@ -286,7 +267,8 @@ inspired by optimal transport.</p>
   combines the multiple dimensions into a scalar reward value.</p>
   <fig>
     <caption><p>ArmoRM’s Model Architecture (from
-    (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>))</p></caption>
+    (<xref alt="Wang, Xiong, et al. 2024" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr">Wang,
+    Xiong, et al. 2024</xref>))</p></caption>
     <graphic mimetype="image" mime-subtype="png" xlink:href="images/ArmoRM-Model-Architecture-Sketch.png" />
   </fig>
   <p>The regression layer is trained with Ridge regression on a
@@ -322,8 +304,8 @@ inspired by optimal transport.</p>
     visualized each reward dimension over the space of embedded
     responses, which we’ve plotted in 2 dimensions using the
     dimensionality-reduction tool PHATE
-    (<xref alt="Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala?" rid="ref-Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala-nb-1" ref-type="bibr"><bold>Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala?</bold></xref>).
-    As
+    (<xref alt="Moon et al. 2019" rid="ref-Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala-nb-1" ref-type="bibr">Moon
+    et al. 2019</xref>). As
     (<xref alt="fig-armo-reward-variation?" rid="ref-fig-armo-reward-variation-nb-1" ref-type="bibr"><bold>fig-armo-reward-variation?</bold></xref>)
     illustrates, many of ArmoRM’s reward dimensions show striking
     correlations – all of the code-related dimensions, for instance,
@@ -416,7 +398,8 @@ inspired by optimal transport.</p>
   distributions. Equivalently, via the Kantorovich-Rubinstein duality,
   it can be written as a search over the space of Lipschitz-constrained
   scalar functions
-  (<xref alt="Arjovsky2017-WassersteinGenerativeAdversarialNetworks?" rid="ref-Arjovsky2017-WassersteinGenerativeAdversarialNetworks-nb-1" ref-type="bibr"><bold>Arjovsky2017-WassersteinGenerativeAdversarialNetworks?</bold></xref>):</p>
+  (<xref alt="Arjovsky, Chintala, and Bottou 2017" rid="ref-Arjovsky2017-WassersteinGenerativeAdversarialNetworks-nb-1" ref-type="bibr">Arjovsky,
+  Chintala, and Bottou 2017</xref>):</p>
   <p><disp-formula><alternatives>
   <tex-math><![CDATA[W_1(\mu, \nu)=\frac{1}{K} \sup _{\|f\|_L \leq K} \mathbb{E}_{x \sim \mu}[f(x)]-\mathbb{E}_{y \sim \nu}[f(y)]]]></tex-math>
   <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>μ</mml:mi><mml:mo>,</mml:mo><mml:mi>ν</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mfrac><mml:mn>1</mml:mn><mml:mi>K</mml:mi></mml:mfrac><mml:munder><mml:mo>sup</mml:mo><mml:mrow><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>f</mml:mi><mml:msub><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>L</mml:mi></mml:msub><mml:mo>≤</mml:mo><mml:mi>K</mml:mi></mml:mrow></mml:munder><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>x</mml:mi><mml:mo>∼</mml:mo><mml:mi>μ</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>x</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mo>−</mml:mo><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>y</mml:mi><mml:mo>∼</mml:mo><mml:mi>ν</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>y</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></p>
@@ -537,8 +520,9 @@ inspired by optimal transport.</p>
     uncertainties on out-of-distribution data. An ensemble of linear
     networks (following ArmoRM’s regression layer) and an epistemic
     neural network
-    (<xref alt="Osband2023-EpistemicNeuralNetworks?" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr"><bold>Osband2023-EpistemicNeuralNetworks?</bold></xref>)
-    both reported mostly uniform uncertainties across datasets (see
+    (<xref alt="Osband et al. 2023" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr">Osband
+    et al. 2023</xref>) both reported mostly uniform uncertainties
+    across datasets (see
     (<xref alt="fig-ensemble-uncertainties?" rid="ref-fig-ensemble-uncertainties-nb-1" ref-type="bibr"><bold>fig-ensemble-uncertainties?</bold></xref>)).</p>
     <fig id="fig-ensemble-uncertainties-nb-1">
       <table-wrap>
@@ -640,8 +624,8 @@ inspired by optimal transport.</p>
     <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mi>g</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>x</mml:mi><mml:mo>,</mml:mo><mml:mi>u</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>.
     The rest proceeds identically to ArmoRM.</p>
     <p>For this and the previous method, as well as the baseline ArmoRM,
-    we used the training hyperparameters reported by
-    (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>).</p>
+    we used the training hyperparameters reported by Wang, Xiong, et al.
+    (<xref alt="2024" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr">2024</xref>).</p>
     <p><bold>Wasserstein Uncertainty.</bold> We adapt the framework of
     Wasserstein Reward Modeling to the setting of multiple uncertain
     dimensions. The input space for the witness function is a
@@ -692,9 +676,10 @@ inspired by optimal transport.</p>
   <title>Results</title>
   <p>We evaluated these three models and the baseline ArmoRM
   implementation on AllenAI’s <italic>RewardBench</italic>
-  (<xref alt="Lambert2024-RewardBenchEvaluatingRewardModelsLanguage?" rid="ref-Lambert2024-RewardBenchEvaluatingRewardModelsLanguage-nb-1" ref-type="bibr"><bold>Lambert2024-RewardBenchEvaluatingRewardModelsLanguage?</bold></xref>).
-  Note that we were unable to reproduce
-  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  (<xref alt="Lambert et al. 2024" rid="ref-Lambert2024-RewardBenchEvaluatingRewardModelsLanguage-nb-1" ref-type="bibr">Lambert
+  et al. 2024</xref>). Note that we were unable to reproduce Wang,
+  Xiong, et al.
+  (<xref alt="2024" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr">2024</xref>)’s
   published scores for ArmoRM; we below report the scores we obtained
   training each model from scratch. For context, we include the
   RewardBench scores of two other top performing models.</p>
@@ -916,6 +901,320 @@ inspired by optimal transport.</p>
   LLMs with human values.</p>
   <sec id="references-nb-1">
     <title>References</title>
+    <ref-list>
+      <ref id="ref-Arjovsky2017-WassersteinGenerativeAdversarialNetworks-nb-1">
+        <element-citation publication-type="paper-conference">
+          <person-group person-group-type="author">
+            <name><surname>Arjovsky</surname><given-names>Martin</given-names></name>
+            <name><surname>Chintala</surname><given-names>Soumith</given-names></name>
+            <name><surname>Bottou</surname><given-names>Léon</given-names></name>
+          </person-group>
+          <article-title>Wasserstein Generative Adversarial Networks</article-title>
+          <source>Proceedings of the 34th International Conference on Machine Learning</source>
+          <publisher-name>PMLR</publisher-name>
+          <year iso-8601-date="2017-07">2017</year><month>07</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-12-13">2024</year><month>12</month><day>13</day></date-in-citation>
+          <issn>2640-3498</issn>
+          <fpage>214</fpage>
+          <lpage>223</lpage>
+        </element-citation>
+      </ref>
+      <ref id="ref-Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences-nb-1">
+        <element-citation publication-type="paper-conference">
+          <person-group person-group-type="author">
+            <name><surname>Chakraborty</surname><given-names>Souradip</given-names></name>
+            <name><surname>Qiu</surname><given-names>Jiahao</given-names></name>
+            <name><surname>Yuan</surname><given-names>Hui</given-names></name>
+            <name><surname>Koppel</surname><given-names>Alec</given-names></name>
+            <name><surname>Manocha</surname><given-names>Dinesh</given-names></name>
+            <name><surname>Huang</surname><given-names>Furong</given-names></name>
+            <name><surname>Bedi</surname><given-names>Amrit</given-names></name>
+            <name><surname>Wang</surname><given-names>Mengdi</given-names></name>
+          </person-group>
+          <article-title>MaxMin-RLHF: Alignment with Diverse Human Preferences</article-title>
+          <source>Forty-first International Conference on Machine Learning</source>
+          <year iso-8601-date="2024-06">2024</year><month>06</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-12-13">2024</year><month>12</month><day>13</day></date-in-citation>
+        </element-citation>
+      </ref>
+      <ref id="ref-Cui2024-UltraFeedbackBoostingLanguageModelsScaled-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Cui</surname><given-names>Ganqu</given-names></name>
+            <name><surname>Yuan</surname><given-names>Lifan</given-names></name>
+            <name><surname>Ding</surname><given-names>Ning</given-names></name>
+            <name><surname>Yao</surname><given-names>Guanming</given-names></name>
+            <name><surname>He</surname><given-names>Bingxiang</given-names></name>
+            <name><surname>Zhu</surname><given-names>Wei</given-names></name>
+            <name><surname>Ni</surname><given-names>Yuan</given-names></name>
+            <name><surname>Xie</surname><given-names>Guotong</given-names></name>
+            <name><surname>Xie</surname><given-names>Ruobing</given-names></name>
+            <name><surname>Lin</surname><given-names>Yankai</given-names></name>
+            <name><surname>Liu</surname><given-names>Zhiyuan</given-names></name>
+            <name><surname>Sun</surname><given-names>Maosong</given-names></name>
+          </person-group>
+          <article-title>UltraFeedback: Boosting Language Models with Scaled AI Feedback</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2024-07">2024</year><month>07</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-10-13">2024</year><month>10</month><day>13</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2310.01377</uri>
+        </element-citation>
+      </ref>
+      <ref id="ref-Dwaracherla2024-EfficientExplorationLLMs-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Dwaracherla</surname><given-names>Vikranth</given-names></name>
+            <name><surname>Asghari</surname><given-names>Seyed Mohammad</given-names></name>
+            <name><surname>Hao</surname><given-names>Botao</given-names></name>
+            <name><surname>Roy</surname><given-names>Benjamin Van</given-names></name>
+          </person-group>
+          <article-title>Efficient Exploration for LLMs</article-title>
+          <year iso-8601-date="2024-06">2024</year><month>06</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-10-24">2024</year><month>10</month><day>24</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2402.00396</uri>
+          <pub-id pub-id-type="doi">10.48550/arXiv.2402.00396</pub-id>
+        </element-citation>
+      </ref>
+      <ref id="ref-Eisenstein2024-RewardModelEnsemblesMitigatenot-nb-1">
+        <element-citation publication-type="article-journal">
+          <person-group person-group-type="author">
+            <name><surname>Eisenstein</surname><given-names>Jacob</given-names></name>
+            <name><surname>Nagpal</surname><given-names>Chirag</given-names></name>
+            <name><surname>Agarwal</surname><given-names>Alekh</given-names></name>
+            <name><surname>Beirami</surname><given-names>Ahmad</given-names></name>
+            <name><surname>D’Amour</surname><given-names>Alex</given-names></name>
+            <name><surname>Dvijotham</surname><given-names>DJ</given-names></name>
+            <name><surname>Fisch</surname><given-names>Adam</given-names></name>
+            <name><surname>Heller</surname><given-names>Katherine</given-names></name>
+            <name><surname>Pfohl</surname><given-names>Stephen</given-names></name>
+            <name><surname>Ramachandran</surname><given-names>Deepak</given-names></name>
+            <name><surname>Shaw</surname><given-names>Peter</given-names></name>
+            <name><surname>Berant</surname><given-names>Jonathan</given-names></name>
+          </person-group>
+          <article-title>Reward Model Ensembles Mitigate but do not Eliminate Re- ward Hacking</article-title>
+          <year iso-8601-date="2024">2024</year>
+        </element-citation>
+      </ref>
+      <ref id="ref-Ethayarajh2024-KTOModelAlignmentProspectTheoretic-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Ethayarajh</surname><given-names>Kawin</given-names></name>
+            <name><surname>Xu</surname><given-names>Winnie</given-names></name>
+            <name><surname>Muennighoff</surname><given-names>Niklas</given-names></name>
+            <name><surname>Jurafsky</surname><given-names>Dan</given-names></name>
+            <name><surname>Kiela</surname><given-names>Douwe</given-names></name>
+          </person-group>
+          <article-title>KTO: Model Alignment as Prospect Theoretic Optimization</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2024-11">2024</year><month>11</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-12-13">2024</year><month>12</month><day>13</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2402.01306</uri>
+          <pub-id pub-id-type="doi">10.48550/arXiv.2402.01306</pub-id>
+        </element-citation>
+      </ref>
+      <ref id="ref-Ji2023-BeaverTailsImprovedSafetyAlignmentLLM-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Ji</surname><given-names>Jiaming</given-names></name>
+            <name><surname>Liu</surname><given-names>Mickel</given-names></name>
+            <name><surname>Dai</surname><given-names>Juntao</given-names></name>
+            <name><surname>Pan</surname><given-names>Xuehai</given-names></name>
+            <name><surname>Zhang</surname><given-names>Chi</given-names></name>
+            <name><surname>Bian</surname><given-names>Ce</given-names></name>
+            <name><surname>Zhang</surname><given-names>Chi</given-names></name>
+            <name><surname>Sun</surname><given-names>Ruiyang</given-names></name>
+            <name><surname>Wang</surname><given-names>Yizhou</given-names></name>
+            <name><surname>Yang</surname><given-names>Yaodong</given-names></name>
+          </person-group>
+          <article-title>BeaverTails: Towards Improved Safety Alignment of LLM via a Human-Preference Dataset</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2023-11">2023</year><month>11</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-10-13">2024</year><month>10</month><day>13</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2307.04657</uri>
+        </element-citation>
+      </ref>
+      <ref id="ref-Lambert2024-RewardBenchEvaluatingRewardModelsLanguage-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Lambert</surname><given-names>Nathan</given-names></name>
+            <name><surname>Pyatkin</surname><given-names>Valentina</given-names></name>
+            <name><surname>Morrison</surname><given-names>Jacob</given-names></name>
+            <name><surname>Miranda</surname><given-names>L. J.</given-names></name>
+            <name><surname>Lin</surname><given-names>Bill Yuchen</given-names></name>
+            <name><surname>Chandu</surname><given-names>Khyathi</given-names></name>
+            <name><surname>Dziri</surname><given-names>Nouha</given-names></name>
+            <name><surname>Kumar</surname><given-names>Sachin</given-names></name>
+            <name><surname>Zick</surname><given-names>Tom</given-names></name>
+            <name><surname>Choi</surname><given-names>Yejin</given-names></name>
+            <name><surname>Smith</surname><given-names>Noah A.</given-names></name>
+            <name><surname>Hajishirzi</surname><given-names>Hannaneh</given-names></name>
+          </person-group>
+          <article-title>RewardBench: Evaluating Reward Models for Language Modeling</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2024-06">2024</year><month>06</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-10-13">2024</year><month>10</month><day>13</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2403.13787</uri>
+        </element-citation>
+      </ref>
+      <ref id="ref-Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala-nb-1">
+        <element-citation publication-type="article-journal">
+          <person-group person-group-type="author">
+            <name><surname>Moon</surname><given-names>Kevin R.</given-names></name>
+            <name><surname>van Dijk</surname><given-names>David</given-names></name>
+            <name><surname>Wang</surname><given-names>Zheng</given-names></name>
+            <name><surname>Gigante</surname><given-names>Scott</given-names></name>
+            <name><surname>Burkhardt</surname><given-names>Daniel B.</given-names></name>
+            <name><surname>Chen</surname><given-names>William S.</given-names></name>
+            <name><surname>Yim</surname><given-names>Kristina</given-names></name>
+            <name><surname>Elzen</surname><given-names>Antonia van den</given-names></name>
+            <name><surname>Hirn</surname><given-names>Matthew J.</given-names></name>
+            <name><surname>Coifman</surname><given-names>Ronald R.</given-names></name>
+            <name><surname>Ivanova</surname><given-names>Natalia B.</given-names></name>
+            <name><surname>Wolf</surname><given-names>Guy</given-names></name>
+            <name><surname>Krishnaswamy</surname><given-names>Smita</given-names></name>
+          </person-group>
+          <article-title>Visualizing structure and transitions in high-dimensional biological data</article-title>
+          <source>Nature Biotechnology</source>
+          <publisher-name>Nature Publishing Group</publisher-name>
+          <year iso-8601-date="2019-12">2019</year><month>12</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2023-04-24">2023</year><month>04</month><day>24</day></date-in-citation>
+          <volume>37</volume>
+          <issue>12</issue>
+          <issn>1546-1696</issn>
+          <pub-id pub-id-type="doi">10.1038/s41587-019-0336-3</pub-id>
+          <fpage>1482</fpage>
+          <lpage>1492</lpage>
+        </element-citation>
+      </ref>
+      <ref id="ref-Osband2023-EpistemicNeuralNetworks-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Osband</surname><given-names>Ian</given-names></name>
+            <name><surname>Wen</surname><given-names>Zheng</given-names></name>
+            <name><surname>Asghari</surname><given-names>Seyed Mohammad</given-names></name>
+            <name><surname>Dwaracherla</surname><given-names>Vikranth</given-names></name>
+            <name><surname>Ibrahimi</surname><given-names>Morteza</given-names></name>
+            <name><surname>Lu</surname><given-names>Xiuyuan</given-names></name>
+            <name><surname>Roy</surname><given-names>Benjamin Van</given-names></name>
+          </person-group>
+          <article-title>Epistemic Neural Networks</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2023-05">2023</year><month>05</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-11-01">2024</year><month>11</month><day>01</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2107.08924</uri>
+          <pub-id pub-id-type="doi">10.48550/arXiv.2107.08924</pub-id>
+        </element-citation>
+      </ref>
+      <ref id="ref-Ouyang2022-Traininglanguagemodelsfollowinstructions-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Ouyang</surname><given-names>Long</given-names></name>
+            <name><surname>Wu</surname><given-names>Jeff</given-names></name>
+            <name><surname>Jiang</surname><given-names>Xu</given-names></name>
+            <name><surname>Almeida</surname><given-names>Diogo</given-names></name>
+            <name><surname>Wainwright</surname><given-names>Carroll L.</given-names></name>
+            <name><surname>Mishkin</surname><given-names>Pamela</given-names></name>
+            <name><surname>Zhang</surname><given-names>Chong</given-names></name>
+            <name><surname>Agarwal</surname><given-names>Sandhini</given-names></name>
+            <name><surname>Slama</surname><given-names>Katarina</given-names></name>
+            <name><surname>Ray</surname><given-names>Alex</given-names></name>
+            <name><surname>Schulman</surname><given-names>John</given-names></name>
+            <name><surname>Hilton</surname><given-names>Jacob</given-names></name>
+            <name><surname>Kelton</surname><given-names>Fraser</given-names></name>
+            <name><surname>Miller</surname><given-names>Luke</given-names></name>
+            <name><surname>Simens</surname><given-names>Maddie</given-names></name>
+            <name><surname>Askell</surname><given-names>Amanda</given-names></name>
+            <name><surname>Welinder</surname><given-names>Peter</given-names></name>
+            <name><surname>Christiano</surname><given-names>Paul</given-names></name>
+            <name><surname>Leike</surname><given-names>Jan</given-names></name>
+            <name><surname>Lowe</surname><given-names>Ryan</given-names></name>
+          </person-group>
+          <article-title>Training language models to follow instructions with human feedback</article-title>
+          <source>arXiv.org</source>
+          <publisher-name>https://arxiv.org/abs/2203.02155v1</publisher-name>
+          <year iso-8601-date="2022-03">2022</year><month>03</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-09-29">2024</year><month>09</month><day>29</day></date-in-citation>
+        </element-citation>
+      </ref>
+      <ref id="ref-Rafailov2024-DirectPreferenceOptimizationYourLanguageb-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Rafailov</surname><given-names>Rafael</given-names></name>
+            <name><surname>Sharma</surname><given-names>Archit</given-names></name>
+            <name><surname>Mitchell</surname><given-names>Eric</given-names></name>
+            <name><surname>Ermon</surname><given-names>Stefano</given-names></name>
+            <name><surname>Manning</surname><given-names>Christopher D.</given-names></name>
+            <name><surname>Finn</surname><given-names>Chelsea</given-names></name>
+          </person-group>
+          <article-title>Direct Preference Optimization: Your Language Model is Secretly a Reward Model</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2024-07">2024</year><month>07</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-12-13">2024</year><month>12</month><day>13</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2305.18290</uri>
+          <pub-id pub-id-type="doi">10.48550/arXiv.2305.18290</pub-id>
+        </element-citation>
+      </ref>
+      <ref id="ref-Wang2024-ArithmeticControlLLMsDiverseUser-nb-1">
+        <element-citation publication-type="paper-conference">
+          <person-group person-group-type="author">
+            <name><surname>Wang</surname><given-names>Haoxiang</given-names></name>
+            <name><surname>Lin</surname><given-names>Yong</given-names></name>
+            <name><surname>Xiong</surname><given-names>Wei</given-names></name>
+            <name><surname>Yang</surname><given-names>Rui</given-names></name>
+            <name><surname>Diao</surname><given-names>Shizhe</given-names></name>
+            <name><surname>Qiu</surname><given-names>Shuang</given-names></name>
+            <name><surname>Zhao</surname><given-names>Han</given-names></name>
+            <name><surname>Zhang</surname><given-names>Tong</given-names></name>
+          </person-group>
+          <article-title>Arithmetic Control of LLMs for Diverse User Preferences: Directional Preference Alignment with Multi-Objective Rewards</article-title>
+          <source>Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers), ACL 2024, Bangkok, Thailand, August 11-16, 2024</source>
+          <person-group person-group-type="editor">
+            <name><surname>Ku</surname><given-names>Lun-Wei</given-names></name>
+            <name><surname>Martins</surname><given-names>Andre</given-names></name>
+            <name><surname>Srikumar</surname><given-names>Vivek</given-names></name>
+          </person-group>
+          <publisher-name>Association for Computational Linguistics</publisher-name>
+          <year iso-8601-date="2024">2024</year>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-12-13">2024</year><month>12</month><day>13</day></date-in-citation>
+          <pub-id pub-id-type="doi">10.18653/V1/2024.ACL-LONG.468</pub-id>
+          <fpage>8642</fpage>
+          <lpage>8655</lpage>
+        </element-citation>
+      </ref>
+      <ref id="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1">
+        <element-citation>
+          <person-group person-group-type="author">
+            <name><surname>Wang</surname><given-names>Haoxiang</given-names></name>
+            <name><surname>Xiong</surname><given-names>Wei</given-names></name>
+            <name><surname>Xie</surname><given-names>Tengyang</given-names></name>
+            <name><surname>Zhao</surname><given-names>Han</given-names></name>
+            <name><surname>Zhang</surname><given-names>Tong</given-names></name>
+          </person-group>
+          <article-title>Interpretable Preferences via Multi-Objective Reward Modeling and Mixture-of-Experts</article-title>
+          <publisher-name>arXiv</publisher-name>
+          <year iso-8601-date="2024-06">2024</year><month>06</month>
+          <date-in-citation content-type="access-date"><year iso-8601-date="2024-10-10">2024</year><month>10</month><day>10</day></date-in-citation>
+          <uri>https://arxiv.org/abs/2406.12845</uri>
+          <pub-id pub-id-type="doi">10.48550/arXiv.2406.12845</pub-id>
+        </element-citation>
+      </ref>
+      <ref id="ref-Wu-FineGrainedHumanFeedbackGivesBetter-nb-1">
+        <element-citation publication-type="article-journal">
+          <person-group person-group-type="author">
+            <name><surname>Wu</surname><given-names>Zeqiu</given-names></name>
+            <name><surname>Hu</surname><given-names>Yushi</given-names></name>
+            <name><surname>Shi</surname><given-names>Weijia</given-names></name>
+            <name><surname>Dziri</surname><given-names>Nouha</given-names></name>
+            <name><surname>Suhr</surname><given-names>Alane</given-names></name>
+            <name><surname>Ammanabrolu</surname><given-names>Prithviraj</given-names></name>
+            <name><surname>Smith</surname><given-names>Noah A</given-names></name>
+            <name><surname>Ostendorf</surname><given-names>Mari</given-names></name>
+            <name><surname>Hajishirzi</surname><given-names>Hannaneh</given-names></name>
+          </person-group>
+          <article-title>Fine-Grained Human Feedback Gives Better Rewards for Language Model Training</article-title>
+        </element-citation>
+      </ref>
+    </ref-list>
   </sec>
 </sec>
 </body>
