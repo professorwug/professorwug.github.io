@@ -3,9 +3,8 @@ project:
 
 manuscript:
   article: index.qmd
-  code-links: 
-    - name: Source
-      repo: https://github.com/professorwug/professorwug.github.io
+  code-links: repo
+      
 
 format:
   html:
