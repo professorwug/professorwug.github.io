@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+    <meta charset="utf-8">
+    <meta name="generator" content="quarto-1.6.40">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+    <meta name="author" content="Kincaid MacDonald">
+    <meta name="dcterms.date" content="2025-01-22">
+    <meta name="keywords" content="RLHF, Multidimensional Reward Modeling, Bayesian Neural Networks, Uncertainty Estimation, Wasserstein Reward Modeling, Manifold Learning">
+
+    <title>Multi-dimensional Reward Modeling with Uncertainty</title>
+    <style>
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      div.columns{display: flex; gap: min(4vw, 1.5em);}
+      div.column{flex: auto; overflow-x: auto;}
+      div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+      ul.task-list{list-style: none;}
+      ul.task-list li input[type="checkbox"] {
+        width: 0.8em;
+        margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+        vertical-align: middle;
+      }
+      /* CSS for citations */
+      div.csl-bib-body { }
+      div.csl-entry {
+        clear: both;
+      }
+      .hanging-indent div.csl-entry {
+        margin-left:2em;
+        text-indent:-2em;
+      }
+      div.csl-left-margin {
+        min-width:2em;
+        float:left;
+      }
+      div.csl-right-inline {
+        margin-left:2em;
+        padding-left:1em;
+      }
+      div.csl-indent {
+        margin-left: 2em;
+      }    </style>
+
+    <style>
+      body.hypothesis-enabled #quarto-embed-header {
+        padding-right: 36px;
+      }
+
+      #quarto-embed-header {
+        height: 3em;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: solid 1px;
+      }
+
+      #quarto-embed-header h6 {
+        font-size: 1.1em;
+        padding-top: 0.6em;
+        margin-left: 1em;
+        margin-right: 1em;
+        font-weight: 400;
+      }
+
+      #quarto-embed-header a.quarto-back-link,
+      #quarto-embed-header a.quarto-download-embed {
+        font-size: 0.8em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        margin-left: 1em;
+        margin-right: 1em;
+      }
+
+      .quarto-back-container {
+        padding-left: 0.5em;
+        display: flex;
+      }
+
+      .headroom {
+          will-change: transform;
+          transition: transform 200ms linear;
+      }
+
+      .headroom--pinned {
+          transform: translateY(0%);
+      }
+
+      .headroom--unpinned {
+          transform: translateY(-100%);
+      }      
+    </style>
+
+    <script>
+    window.document.addEventListener("DOMContentLoaded", function () {
+
+      var header = window.document.querySelector("#quarto-embed-header");
+      const titleBannerEl = window.document.querySelector("body > #title-block-header");
+      if (titleBannerEl) {
+        titleBannerEl.style.paddingTop = header.clientHeight + "px";
+      }
+      const contentEl = window.document.getElementById('quarto-content');
+      for (const child of contentEl.children) {
+        child.style.paddingTop = header.clientHeight + "px";
+        child.style.marginTop = "1em";
+      }
+
+      // Use the article root if the `back` call doesn't work. This isn't perfect
+      // but should typically work
+      window.quartoBackToArticle = () => {
+        var currentUrl = window.location.href;
+        window.history.back();
+        setTimeout(() => {
+            // if location was not changed in 100 ms, then there is no history back
+            if(currentUrl === window.location.href){              
+                // redirect to site root
+                window.location.href = "index.html";
+            }
+        }, 100);
+      }
+
+      const headroom = new window.Headroom(header, {
+        tolerance: 5,
+        onPin: function () {
+        },
+        onUnpin: function () {
+        },
+      });
+      headroom.init();
+    });
+    </script>
+
+    
+<script src="site_libs/manuscript-notebook/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-7bfb9ce031f0150bcdd0059ffcd3ab40.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+     <script async="" src="https://hypothes.is/embed.js"></script>
+<script>
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    document.body.classList.add('hypothesis-enabled');
+  });
+</script>   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script> 
+      </head>
+
+  <body class="quarto-notebook">
+    <div id="quarto-embed-header" class="headroom fixed-top bg-primary">
+      
+      <a onclick="window.quartoBackToArticle(); return false;" class="btn btn-primary quarto-back-link" href=""><i class="bi bi-caret-left"></i> Back to Article</a>
+      <h6><i class="bi bi-journal-code"></i> Multi-dimensional Reward Modeling with Uncertainty</h6>
+
+            <a href="./multiple-uncertain-reward-dimensions.qmd" class="btn btn-primary quarto-download-embed" download="multiple-uncertain-reward-dimensions.qmd">Download Source</a>
+          </div>
+
+     <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Multi-dimensional Reward Modeling with Uncertainty</h1>
+          </div>
+
+    
+    <div class="quarto-title-meta-container">
+      <div class="quarto-title-meta-column-start">
+            <div class="quarto-title-meta-author">
+          <div class="quarto-title-meta-heading">Author</div>
+          <div class="quarto-title-meta-heading">Affiliation</div>
+          
+                <div class="quarto-title-meta-contents">
+            <p class="author">Kincaid MacDonald <a href="mailto:hey@kincaid.ink" class="quarto-title-author-email"><i class="bi bi-envelope"></i></a> <a href="https://orcid.org/0009-0006-4686-7488" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
+          </div>
+                <div class="quarto-title-meta-contents">
+                    <p class="affiliation">
+                        Princeton
+                      </p>
+                  </div>
+                    </div>
+        
+        <div class="quarto-title-meta">
+
+                      
+                <div>
+            <div class="quarto-title-meta-heading">Published</div>
+            <div class="quarto-title-meta-contents">
+              <p class="date">January 22, 2025</p>
+            </div>
+          </div>
+          
+                
+              </div>
+      </div>
+      <div class="quarto-title-meta-column-end quarto-other-formats-target">
+      </div>
+    </div>
+
+    <div>
+      <div class="abstract">
+        <div class="block-title">Abstract</div>
+        <p>We consider augmenting multidimensional reward models with uncertainty estimates, and find that this modestly improves the performance of (previously) state-of-the-art baseline model (ArmoRM). Along the way, we propose a new framework for preference learning inspired by optimal transport.</p>
+      </div>
+    </div>
+
+    <div>
+      <div class="keywords">
+        <div class="block-title">Keywords</div>
+        <p>RLHF, Multidimensional Reward Modeling, Bayesian Neural Networks, Uncertainty Estimation, Wasserstein Reward Modeling, Manifold Learning</p>
+      </div>
+    </div>
+
+    <div class="quarto-other-links-text-target">
+    </div>  </div>
+</header><div id="quarto-content" class="page-columns page-rows-contents page-layout-article toc-left">
+<div id="quarto-sidebar-toc-left" class="sidebar toc-left">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#related-work" id="toc-related-work" class="nav-link" data-scroll-target="#related-work">Related Work</a></li>
+  <li><a href="#armorm" id="toc-armorm" class="nav-link" data-scroll-target="#armorm">ArmoRM</a>
+  <ul class="collapse">
+  <li><a href="#armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used" id="toc-armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used" class="nav-link" data-scroll-target="#armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used">ArmoRM’s reward dimensions are highly correlated, and only a subset are actually used</a></li>
+  </ul></li>
+  <li><a href="#wasserstein-reward-modeling-preference-learning-as-optimal-transport" id="toc-wasserstein-reward-modeling-preference-learning-as-optimal-transport" class="nav-link" data-scroll-target="#wasserstein-reward-modeling-preference-learning-as-optimal-transport">Wasserstein Reward Modeling: Preference Learning as Optimal Transport</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <ul class="collapse">
+  <li><a href="#uncertainty-quantification" id="toc-uncertainty-quantification" class="nav-link" data-scroll-target="#uncertainty-quantification">Uncertainty Quantification</a></li>
+  <li><a href="#reward-compression" id="toc-reward-compression" class="nav-link" data-scroll-target="#reward-compression">Reward Compression</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">Discussion</a>
+  <ul class="collapse">
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+</div>
+<main class="content quarto-banner-title-block" id="quarto-document-content">      
+
+       <section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>Standard Reinforcement Learning from Human Feedback models that diverse and enigmatic morass of norms known as ‘human values’ with a single scalar, produced by a black-box LLM. Not only does this demand a great deal from the black-box model, it also hampers efforts to: 1) <em>interpret</em> the model’s enacted preferences, 2) <em>audit</em> whether imperatives like ‘Safety first!’ are obeyed in all contexts, and 3) <em>steer</em> the model towards desired and away from undesirable human behavior.</p>
+<p>Multidimensional reward learning has been proposed as a remedy to these issues. Learn separate dimensions for different facets of human value (honesty, helpfulness, verbosity, factuality) — then combine them with flexible and optionally user-customizable weighting schemes. Multidimensional reward models are both intrinsically interpretable and frequently punch well above their model size class – an instance of a ‘reverse alignment tax’. Here, at least, adding more human-defined structure to the problem of learning human values is beneficial.</p>
+<p>Yet a fundamental problem in Multidimensional RLHF is how to appropriately combine multiple dimensions of human value. How can a model perform this compression without either <em>overemphasizing</em> some facet of human preference, or compressing so much that it loses the value of modeling multiple reward dimensions?</p>
+<p>In this project, we consider whether <em>uncertainty quantification</em> can alleviate these challenges. After all, there are situations where the correct value of a reward dimension like ‘safety’ is unknowable without extra context. There are also reward values (e.g.&nbsp;‘code readability’) that, while useful in some scenarios, simply don’t apply to others. Dimension-wise uncertainty quantification could both equip reward models to better utilize extra context-dependent dimensions and be used to more intelligently compress the multiple reward dimensions into a scalar suitable for RL optimization.</p>
+<p>We also propose a new more flexible paradigm for preference learning based on optimal transport theory, which replaces the standard reward model trained with Bradley-Terry loss with the dual form of the Wasserstein distance — and is able to natively combine multiple uncertain reward dimensions without weighted sums.</p>
+<p>Our results show that incorporating uncertainty into multidimensional reward learning modestly improves the performance of a once state-of-the-art model, and significantly improves its satefy performance.</p>
+</section>
+<section id="related-work" class="level1">
+<h1>Related Work</h1>
+<p>Standard Reinforcement Learning from Human Feedback (RLHF) follows <span class="citation" data-cites="Ouyang2022-Traininglanguagemodelsfollowinstructions">(<a href="#ref-Ouyang2022-Traininglanguagemodelsfollowinstructions" role="doc-biblioref"><strong>Ouyang2022-Traininglanguagemodelsfollowinstructions?</strong></a>)</span> in performing preference tuning on LLMs via a two-stage process: first, training a (scalar-valued) reward model on (binary) preference data using a Bradley-Terry objective; second, using a reinforcement learning algorithm like Proximal Policy Optimization to fine-tune the given LLM to maximize the learned reward function. This dual training can be finicky, motivating approaches like DPO <span class="citation" data-cites="Rafailov2024-DirectPreferenceOptimizationYourLanguageb">(<a href="#ref-Rafailov2024-DirectPreferenceOptimizationYourLanguageb" role="doc-biblioref"><strong>Rafailov2024-DirectPreferenceOptimizationYourLanguageb?</strong></a>)</span> to shortcut the first stage by learning an <em>implicit</em> reward model through directly training the LLM on preference data. Alas, such implicit reward models can be especially sensitive to any distribution shifts between the training data and real-world applications.</p>
+<p>Multi-dimensional reward modeling moves in the opposite direction by making the reward model from Stage 1 even more explicit. The dominant practice is to learn a collection of reward models, trained on datasets annotated to highlight various dimensions (helpfulness, honesty, safety, coherence, reasoning, etc.) of valuable responses – and then ‘compress’ these dimensions into a scalar suitable for Stage 2 optimization with a <em>fixed</em> weighted sum <span class="citation" data-cites="Ji2023-BeaverTailsImprovedSafetyAlignmentLLM Wu-FineGrainedHumanFeedbackGivesBetter Cui2024-UltraFeedbackBoostingLanguageModelsScaled">(<a href="#ref-Ji2023-BeaverTailsImprovedSafetyAlignmentLLM" role="doc-biblioref"><strong>Ji2023-BeaverTailsImprovedSafetyAlignmentLLM?</strong></a>; <a href="#ref-Wu-FineGrainedHumanFeedbackGivesBetter" role="doc-biblioref"><strong>Wu-FineGrainedHumanFeedbackGivesBetter?</strong></a>; <a href="#ref-Cui2024-UltraFeedbackBoostingLanguageModelsScaled" role="doc-biblioref"><strong>Cui2024-UltraFeedbackBoostingLanguageModelsScaled?</strong></a>)</span>. Some allow the sums’ weights to be changed to represent different users’ preferences <span class="citation" data-cites="Wang2024-ArithmeticControlLLMsDiverseUser">(<a href="#ref-Wang2024-ArithmeticControlLLMsDiverseUser" role="doc-biblioref"><strong>Wang2024-ArithmeticControlLLMsDiverseUser?</strong></a>)</span>. The most sophisticated approaches use a dynamically-weighted sum based on context, as in <span class="citation" data-cites="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga">(<a href="#ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga" role="doc-biblioref"><strong>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</strong></a>)</span>’s Absolute-Rating Multi-Objective Reward Model (ArmoRM), which we will discuss below.</p>
+<p>Alternative approaches include <span class="citation" data-cites="Ethayarajh2024-KTOModelAlignmentProspectTheoretic">(<a href="#ref-Ethayarajh2024-KTOModelAlignmentProspectTheoretic" role="doc-biblioref"><strong>Ethayarajh2024-KTOModelAlignmentProspectTheoretic?</strong></a>)</span>, which adapts psychologists Amos Tversky and Daniel Kahneman’s Prospect Theory to LLM alignment; and <span class="citation" data-cites="Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences">(<a href="#ref-Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences" role="doc-biblioref"><strong>Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences?</strong></a>)</span>, who eschews the linear combination of rewards to learn directly from a collection of specialized reward models via an expectation maximization objective modeled after the Egalitarian Principle of social choice theory.</p>
+<p>Some have also investigated the intersection of uncertainty estimation with reward modeling. <span class="citation" data-cites="Eisenstein2024-RewardModelEnsemblesMitigatenot">(<a href="#ref-Eisenstein2024-RewardModelEnsemblesMitigatenot" role="doc-biblioref"><strong>Eisenstein2024-RewardModelEnsemblesMitigatenot?</strong></a>)</span> found that ensembling (scalar-valued) reward models improved robustness against reward hacking. A competing approach to uncertainty estimation, Epistemic Neural Networks <span class="citation" data-cites="Osband2023-EpistemicNeuralNetworks">(<a href="#ref-Osband2023-EpistemicNeuralNetworks" role="doc-biblioref"><strong>Osband2023-EpistemicNeuralNetworks?</strong></a>)</span>, has been found useful in active learning: uncertainty-equipped reward values can prioritize data in a fine-tuning corpus that best increases LLM performance <span class="citation" data-cites="Dwaracherla2024-EfficientExplorationLLMs">(<a href="#ref-Dwaracherla2024-EfficientExplorationLLMs" role="doc-biblioref"><strong>Dwaracherla2024-EfficientExplorationLLMs?</strong></a>)</span>.</p>
+</section>
+<section id="armorm" class="level1">
+<h1>ArmoRM</h1>
+<p>For direct comparability with previous work, we build our uncertainty-aware reward model on top of what may be the most popular multidimensional reward model, <span class="citation" data-cites="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga">(<a href="#ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga" role="doc-biblioref"><strong>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</strong></a>)</span>’s “Absolute-Rating Multi-Objective Reward Model”. ArmoRM was, for a time, the best performing 8b parameter reward model and (at the time of release) performed competitively with 70b parameter models.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>Here, we give a brief overview of the ArmoRM architecture. We then present some results on the base ArmoRM model that raise questions about its effectiveness at handling multiple dimensions, which motivate our uncertainty-aware paradigm. We’ll also note that we were unable to replicate ArmoRM’s published scores, even using the authors’ own training code – which, rather troublingly, has a severe bug that overrides one of the main pieces of their published architecture. Full details on this are in the appendix.</p>
+<p>First, an overview of the method. Intuitively, ArmoRM performs context-dependent weighting of multiple reward dimensions. It adapts the importance assigned to ‘verbosity’ or ‘honesty’ to the context given by the prompt. In theory, this should allow niche reward dimensions like ‘code readability’ to be upweighted when writing code and ignored otherwise. It should also allow, e.g., ‘helpfulness’ to be prioritized over safety in contexts determined to be benign, and vice versa.</p>
+<p>Concretely, this consists of three pieces: an LLM embedding module, a linear regression layer, and an MLP gating layer. First, a given prompt and response are embedded by taking activations from the final layer of the LLM module. Then, the linear regression layer maps the embedded prompt-response pairs to 19 dimensions of reward values. The gating layer then maps the prompt embedding to a set of <em>gating weights</em> <span class="math inline">\(w_i\)</span> for each of the 19 reward dimensions. Finally, a weighted linear sum <span class="math inline">\(\sum_{i} w_i r_i\)</span> combines the multiple dimensions into a scalar reward value.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/ArmoRM-Model-Architecture-Sketch.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="ArmoRM’s Model Architecture (from [@Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga])"><img src="images/ArmoRM-Model-Architecture-Sketch.png" class="img-fluid figure-img" alt="ArmoRM’s Model Architecture (from (Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?))"></a></p>
+<figcaption>ArmoRM’s Model Architecture (from <span class="citation" data-cites="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga">(<a href="#ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga" role="doc-biblioref"><strong>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</strong></a>)</span>)</figcaption>
+</figure>
+</div>
+<p>The regression layer is trained with Ridge regression on a combination of 8 multi-dimensional datasets, each of which has 1-5 dimensions – yielding 19 dimensions in aggregate, with 500k samples. During training, dimensions unused by the current input are masked.</p>
+<p>The gating layer is trained with a Bradley-Terry loss on an aggregate of 10 binary preference datasets with over 800K aggregate examples.</p>
+<p>The LLM module used for embedding is treated as a ‘frozen stem’ and receives no additional tuning during ArmoRM’s training.</p>
+<p>ArmoRM has one final bit of engineering. Noting that reward models can have a bias for undesirably long responses, the authors explicitly correct for this with a <em>verbosity penalty</em>. After training the linear regression layer, they subtract the verbosity dimension from the other reward dimensions until each dimension’s correlation with verbosity falls below a hand-tuned threshold.</p>
+<p>Unfortunately, in the authors’ public implementation of ArmoRM, this verbosity penalty, once calculated, is never actually used. It’s unclear whether this bug was present in their internal code – even after modifying their code to use the verbosity penalty, we’ve been unable to reproduce their results.</p>
+<section id="armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used" class="level2">
+<h2 class="anchored" data-anchor-id="armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used">ArmoRM’s reward dimensions are highly correlated, and only a subset are actually used</h2>
+<p>ArmoRM learns 19 reward dimensions. Are these encoding usefully different information? And how frequently is each dimension in use?</p>
+<p>To investigate, we ran a pre-trained copy of ArmoRM on Frick’s Preference Proxy Evaluations dataset (from Oct.&nbsp;2024) – a newer, harder reward benchmark which should be unknown to ArmoRM. We visualized each reward dimension over the space of embedded responses, which we’ve plotted in 2 dimensions using the dimensionality-reduction tool PHATE <span class="citation" data-cites="Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala">(<a href="#ref-Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala" role="doc-biblioref"><strong>Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala?</strong></a>)</span>. As <span class="citation" data-cites="fig-armo-reward-variation">(<a href="#ref-fig-armo-reward-variation" role="doc-biblioref"><strong>fig-armo-reward-variation?</strong></a>)</span> illustrates, many of ArmoRM’s reward dimensions show striking correlations – all of the code-related dimensions, for instance, show the same pattern of coloration across the space of responses, even when (as with ‘code-complexity’ and ‘code-readability’) their stated values are in direct conflict.</p>
+<div id="fig-armo-reward-variation" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-width="80%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-armo-reward-variation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/rewards-over-response-space.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Variation of each reward dimension over the space of responses, visualized on a dimensionality reduction with PHATE."><img src="images/rewards-over-response-space.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-width="80%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-armo-reward-variation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Variation of each reward dimension over the space of responses, visualized on a dimensionality reduction with PHATE.
+</figcaption>
+</figure>
+</div>
+<p>The same visualization of the reward gating coefficients <span class="math inline">\(w_i\)</span> reveals that most reward dimensions are ignored entirely by ArmoRM’s gating layer, receiving zero weight over the majority of contexts (<span class="citation" data-cites="fig-armo-gating-variation">(<a href="#ref-fig-armo-gating-variation" role="doc-biblioref"><strong>fig-armo-gating-variation?</strong></a>)</span>). Only five reward dimensions show significant non-zero weighting.</p>
+<div id="fig-armo-gating-variation" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-width="80%" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-armo-gating-variation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/gating-coefficients-over-response-space.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Variation of the gating coefficient for each reward dimension, coloring the space of responses, as represented by a PHATE dimensionality reduction."><img src="images/gating-coefficients-over-response-space.png" class="img-fluid quarto-figure quarto-figure-center figure-img" data-fig-width="80%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-armo-gating-variation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Variation of the gating coefficient for each reward dimension, coloring the space of responses, as represented by a PHATE dimensionality reduction.
+</figcaption>
+</figure>
+</div>
+<p>These results suggest either that the underlying reward dimensions don’t have much usefully different information, or (more probably) that the combination of ArmoRM’s linear regression layer and the untrained Llama 8b stem underneath isn’t powerful enough to differentiate them. As a result, of the 19 dimensions ArmoRM uses, only 5 appear to be consistently used.</p>
+</section>
+</section>
+<section id="wasserstein-reward-modeling-preference-learning-as-optimal-transport" class="level1">
+<h1>Wasserstein Reward Modeling: Preference Learning as Optimal Transport</h1>
+<p>Consider a binary preference dataset, which consists of a set of prompts <span class="math inline">\(P\)</span> and, for each <span class="math inline">\(p_i \in P\)</span>, responses <span class="math inline">\(r_1 \in R_1, r_2 \in R_2\)</span>, where <span class="math inline">\(R_1\)</span> is the distribution of preferred and <span class="math inline">\(R_2\)</span> the distribution of rejected responses. The task of preference tuning is to guide the distribution of student responses <span class="math inline">\(R_s\)</span> to be ‘close’ to <span class="math inline">\(R_1\)</span> and ‘far’ from <span class="math inline">\(R_2\)</span>.</p>
+<p>The Bradley-Terry loss treats this as a pairwise classification problem, minimizing a binary cross-entropy loss between the student’s probability of generating from <span class="math inline">\(R_1\)</span> and its probability of generating from <span class="math inline">\(R_2\)</span>.</p>
+<p>But we can also formulate preference tuning as an optimal transport problem, with a loss given by a distributional distance between <span class="math inline">\(R_s\)</span> and <span class="math inline">\(R_1\)</span>. One of the strongest such distances is the Wasserstein distance, defined as</p>
+<p><span class="math display">\[W_1(\mu, \nu)=\frac{1}{K} \sup _{\|f\|_L \leq K} \mathbb{E}_{x \sim \mu}[f(x)]-\mathbb{E}_{y \sim \nu}[f(y)]\]</span></p>
+<p>Intuitively, the Wasserstein distance (also called the ‘Earth Mover’s Distance’) measures the minimum energy required to transport all of the ‘mass’ from the first distribution to the second by searching over all possible “transport plans” between the distributions. Equivalently, via the Kantorovich-Rubinstein duality, it can be written as a search over the space of Lipschitz-constrained scalar functions <span class="citation" data-cites="Arjovsky2017-WassersteinGenerativeAdversarialNetworks">(<a href="#ref-Arjovsky2017-WassersteinGenerativeAdversarialNetworks" role="doc-biblioref"><strong>Arjovsky2017-WassersteinGenerativeAdversarialNetworks?</strong></a>)</span>:</p>
+<p><span class="math display">\[W_1(\mu, \nu)=\frac{1}{K} \sup _{\|f\|_L \leq K} \mathbb{E}_{x \sim \mu}[f(x)]-\mathbb{E}_{y \sim \nu}[f(y)]\]</span></p>
+<p>A function maximizing this (called a “witness function”) adopts maximally distinct values between the first distribution and the second, thus ‘bearing witness’ to their differences.</p>
+<p>This suggests a computationally tractable way to approximate <span class="math inline">\(W_1(R_s, R_1)\)</span>. We can view each <span class="math inline">\(R\)</span> as a manifold in the space <span class="math inline">\(\mathbb{R}^{N \times M}\)</span>, where each <span class="math inline">\(r\)</span> combines an LLM embedding of the prompt with some representation of the response (e.g.&nbsp;another LLM embedding, or equivalent featurization). First, we compute <span class="math inline">\(W_1(R_1, R_2)\)</span> by training a witness function <span class="math inline">\(w:\mathbb{R}^{2N} \to \mathbb{R}\)</span> to maximally distinguish between these ‘training’ distributions. We can then apply this witness function to the student distribution, obtaining an upper bound: <span class="math inline">\(W_1(R_s, R_1) \leq w(R_1) - w(R_s)\)</span>.</p>
+<p>Note that this <span class="math inline">\(w\)</span> plays the same role as a reward model. It’s a scalar-valued function over the space of prompts and responses for which higher values for a given prompt predict the preferred response. Furthermore, minimizing <span class="math inline">\(w(R_s)\)</span> (e.g.&nbsp;via PPO) achieves the preference-tuning objective.</p>
+<p>Thus far we have shown that a Bradley-Terry-like model of preferences can be recovered from an optimal-transport framing of preference learning. However, the dual-Wasserstein definition of the reward model has extra flexibility that makes it attractive for multidimensional reward learning.</p>
+<ol type="1">
+<li>The witness function’s ‘prompt-response’ input space can combine LLM embeddings with arbitrary additional features. Thus, if one has reward dimensions describing verbosity, helpfulness, truthfulness (etc.), these can be incorporated as extra dimensions supplied to the witness function. In this way, Wasserstein reward modeling provides a natural framework for ‘compressing’ multiple reward dimensions into a form suitable for RL optimization.</li>
+<li>Unlike Bradley-Terry reward modeling, Wasserstein reward modeling works even without pairwise mappings between the preferred and rejected response distributions. For example, one could train with a dataset of curated <em>exceptional</em> responses as <span class="math inline">\(R_1\)</span> and a corpus of average responses as <span class="math inline">\(R_2\)</span>.</li>
+<li>This also allows for multiple reward samples per prompt-response input. For instance, if using multiple uncertain reward dimensions as additional input features, uncertainty can be represented by a distribution over the reward dimensions – and we can directly train with this distribution.</li>
+</ol>
+<p>We’ll later describe a specific adaptation of Wasserstein reward modeling to the regime of multiple uncertain reward dimensions. But we note that the utility of this framing isn’t limited to our setting and might also prove advantageous in more general settings, like combining multiple preference datasets without catastrophic forgetting; or providing the optimization guarantees of a stronger distributional distance (especially if the witness function was periodically re-trained on the current student distribution).</p>
+<p>Wasserstein reward modeling also addresses the “Multidimensional Collapse” problem from the introduction: if we learn multiple reward dimensions only to compress them into a scalar suitable for RL optimization, how much information are we losing? In the Wasserstein case, potentially none at all. Optimizing <span class="math inline">\(R_s\)</span> to minimize <span class="math inline">\(w(R_s)\)</span> will (if successful) <em>recreate</em> the input distribution of multi-dimensional reward features associated with each prompt. In this way, the reward from <span class="math inline">\(w\)</span> is viewed not as a single-dimensional descriptor of “human values”, but a <em>distance</em> between the student’s representation of human values and the teacher’s representation.</p>
+</section>
+<section id="methods" class="level1">
+<h1>Methods</h1>
+<section id="uncertainty-quantification" class="level2">
+<h2 class="anchored" data-anchor-id="uncertainty-quantification">Uncertainty Quantification</h2>
+<p>To quantify the uncertainty of each reward dimension, we use an ensemble of 100 regression layers trained from different random initializations. We can then estimate uncertainty from the ensemble’s distribution of outputs – either by taking the variance per dimension or using the distribution of values directly. Of those approaches we tried for estimating uncertainty, only an ensemble of multi-layer perceptrons passed the sanity check of reporting higher uncertainties on out-of-distribution data. An ensemble of linear networks (following ArmoRM’s regression layer) and an epistemic neural network <span class="citation" data-cites="Osband2023-EpistemicNeuralNetworks">(<a href="#ref-Osband2023-EpistemicNeuralNetworks" role="doc-biblioref"><strong>Osband2023-EpistemicNeuralNetworks?</strong></a>)</span> both reported mostly uniform uncertainties across datasets (see <span class="citation" data-cites="fig-ensemble-uncertainties">(<a href="#ref-fig-ensemble-uncertainties" role="doc-biblioref"><strong>fig-ensemble-uncertainties?</strong></a>)</span>).</p>
+<div id="fig-ensemble-uncertainties" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ensemble-uncertainties-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/Linear-Ensemble.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Linear Ensemble"><img src="images/Linear-Ensemble.png" class="img-fluid figure-img"></a></p>
+<figcaption>Linear Ensemble</figcaption>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="images/MLP-Ensemble.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="MLP Ensemble"><img src="images/MLP-Ensemble.png" class="img-fluid figure-img"></a></p>
+<figcaption>MLP Ensemble</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ensemble-uncertainties-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+</figcaption>
+</figure>
+</div>
+<p>The uncertainties per reward dimension from this MLP Ensemble (Figure <span class="citation" data-cites="fig-uncertainties-per-dimension">(<a href="#ref-fig-uncertainties-per-dimension" role="doc-biblioref"><strong>fig-uncertainties-per-dimension?</strong></a>)</span>) show that the variance across the ensemble’s samples for a given response was, for most dimensions, a significant portion of the variance across all responses.</p>
+<div id="fig-uncertainties-per-dimension" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-uncertainties-per-dimension-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/MLP-Ensemble-Uncertainties-by-dimension.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Uncertainties per reward dimension (blue) versus variance in that dimension across responses (orange)"><img src="images/MLP-Ensemble-Uncertainties-by-dimension.jpeg" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-uncertainties-per-dimension-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Uncertainties per reward dimension (blue) versus variance in that dimension across responses (orange)
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="reward-compression" class="level2">
+<h2 class="anchored" data-anchor-id="reward-compression">Reward Compression</h2>
+<p>To use these uncertainties to improve reward compression, we compare three approaches against ArmoRM’s baseline. Let <span class="math inline">\(x,o\)</span> be the LLM embeddings of the prompt and response, respectively; let <span class="math inline">\(r(\vec{o}) = \vec{r}\)</span> be ArmoRM’s multidimensional reward regression layer, and <span class="math inline">\(r_u(\vec{o}) = \vec{r}, \vec{u}\)</span> denote the ensembled MLP version of this layer. Let <span class="math inline">\(g(\vec{x}) = \vec{u}\)</span> be ArmoRM’s gating layer.</p>
+<p>Each model described below is trained from scratch on the aggregate binary preference dataset collected by the authors. We use a learning rate of <span class="math inline">\(10^{-5}\)</span>, a batch size of 1024, and train for 10000 steps.</p>
+<p><strong>Naive Uncertainty.</strong> Intuitively, the weights assigned to each reward dimension should be lower for reward dimensions with high uncertainty. We implement this directly into the baseline ArmoRM architecture by modifying the output of the gating layer with</p>
+<p><span class="math display">\[ w_i' = \text{softmax}(w_i - \alpha u_i) \]</span></p>
+<p>where <span class="math inline">\(w_i\)</span> is the weight assigned to dimension <span class="math inline">\(i\)</span> by the gating layer, and <span class="math inline">\(u_i\)</span> is the variance in dimension <span class="math inline">\(i\)</span> of samples from the MLP Reward Ensemble. The loss and training proceed identically to ArmoRM.</p>
+<p><strong>Bitter Uncertainty.</strong> Here, we feed the uncertainties <span class="math inline">\(u_i\)</span> as extra inputs to the gating layer, taking <span class="math inline">\(w_i = g(x, u)\)</span>. The rest proceeds identically to ArmoRM.</p>
+<p>For this and the previous method, as well as the baseline ArmoRM, we used the training hyperparameters reported by <span class="citation" data-cites="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga">(<a href="#ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga" role="doc-biblioref"><strong>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</strong></a>)</span>.</p>
+<p><strong>Wasserstein Uncertainty.</strong> We adapt the framework of Wasserstein Reward Modeling to the setting of multiple uncertain dimensions. The input space for the witness function is a concatenation of the prompt embedding <span class="math inline">\(x\)</span> and the reward dimensions <span class="math inline">\(\vec{r}\)</span>. To further reduce the dimension of the prompt embedding, we use an additional feature extractor <span class="math inline">\(f: \mathbb{R}^{4096} \to \mathbb{R}^{8}\)</span> which is trained alongside the witness function <span class="math inline">\(w:\mathbb{R}^{8+19} \to \mathbb{R}\)</span>. We train with batches of prompt-response pairs with embeddings <span class="math inline">\(x_1, o_1\)</span> and <span class="math inline">\(x_2, o_2\)</span>, and use the dual-Wasserstein loss:</p>
+<p><span class="math display">\[
+l(b_1, b_2) = \sum_i^B \sum_j^E w([f(o_{1i}),r_j(x_{1i})])  - \sum_i^B \sum_j^E w([f(o_{2i}),r_j(x_{2i})])
+\]</span></p>
+<p>where <span class="math inline">\(r_j\)</span> denotes the <span class="math inline">\(j\)</span>-th MLP of the ensemble of <span class="math inline">\(E\)</span> MLPs, and <span class="math inline">\(B\)</span> denotes the batch size. We find that small batches (~128) improve training stability.</p>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>Results</h1>
+<p>We evaluated these three models and the baseline ArmoRM implementation on AllenAI’s <em>RewardBench</em> <span class="citation" data-cites="Lambert2024-RewardBenchEvaluatingRewardModelsLanguage">(<a href="#ref-Lambert2024-RewardBenchEvaluatingRewardModelsLanguage" role="doc-biblioref"><strong>Lambert2024-RewardBenchEvaluatingRewardModelsLanguage?</strong></a>)</span>. Note that we were unable to reproduce <span class="citation" data-cites="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga">(<a href="#ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga" role="doc-biblioref"><strong>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</strong></a>)</span>’s published scores for ArmoRM; we below report the scores we obtained training each model from scratch. For context, we include the RewardBench scores of two other top performing models.</p>
+<p><span class="citation" data-cites="tbl-no-verbosity">(<a href="#ref-tbl-no-verbosity" role="doc-biblioref"><strong>tbl-no-verbosity?</strong></a>)</span> shows our results. They suggest that <em>any</em> form of incorporated uncertainty produces a significant increase in RewardBench’s safety dimension (+10%), resulting in a modest increase in overall score. Reasoning and Chat performance were mostly unaffected, and performance decreased by 3-6% on Chat Hard.</p>
+<p>Interestingly, even though Wasserstein Uncertainty Modeling and the Naive (and Bitter) Uncertainty approaches use completely different frameworks, they achieve comparable performance. This may indicate that the Wasserstein approach of considering multiple samples at the same time was neither significantly worse nor better than the summary approach of taking the variance. On the other hand, that the Wasserstein framework achieved similar performance to adaptations of refined, hand-tuned approaches like ArmoRM may indicate its utility.</p>
+<div id="tbl-no-verbosity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-no-verbosity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Reward Modeling Results with and without Uncertainty
+</figcaption>
+<div aria-describedby="tbl-no-verbosity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 34%">
+<col style="width: 16%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+<col style="width: 12%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>No Verbosity</th>
+<th>Overall Score</th>
+<th>Chat</th>
+<th>Chat Hard</th>
+<th>Safety</th>
+<th>Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ArmoRM</td>
+<td>82.51</td>
+<td>98.60</td>
+<td><strong>69.74</strong></td>
+<td>78.94</td>
+<td>82.78</td>
+</tr>
+<tr class="even">
+<td>Naive Uncertainty</td>
+<td>84.02</td>
+<td><strong>99.16</strong></td>
+<td>63.38</td>
+<td>89.01</td>
+<td><strong>84.54</strong></td>
+</tr>
+<tr class="odd">
+<td>Bitter Uncertainty</td>
+<td><strong>84.15</strong></td>
+<td>98.60</td>
+<td>66.67</td>
+<td><strong>89.76</strong></td>
+<td>81.57</td>
+</tr>
+<tr class="even">
+<td>Wasserstein Uncertainty</td>
+<td>83.83</td>
+<td>96.93</td>
+<td>66.89</td>
+<td>87.99</td>
+<td>83.54</td>
+</tr>
+<tr class="odd">
+<td>GPT-4o (2024-05-13)</td>
+<td>84.6</td>
+<td>96.6</td>
+<td>70.4</td>
+<td>86.5</td>
+<td>84.9</td>
+</tr>
+<tr class="even">
+<td>Nvidia Nemotron-4-340B-Reward</td>
+<td>92.0</td>
+<td>95.8</td>
+<td>87.1</td>
+<td>91.5</td>
+<td>93.6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>As discussed above, ArmoRM’s paper describes a verbosity penalty meant to counteract the tendency of reward models to reward response length independently from content. However, due to a bug, their code doesn’t actually apply this penalty. <span class="citation" data-cites="tbl-verbosity">(<a href="#ref-tbl-verbosity" role="doc-biblioref"><strong>tbl-verbosity?</strong></a>)</span> shows results for the above models with reward dimensions decoupled from verbosity. This change has curious effects: it improves performance on Chat Hard by ~10 points while decreasing performance on Chat by the same. For the base ArmoRM model (but not the uncertainty equipped) models, it improves safety dramatically, though across all models it decreases reasoning performance by a few points.</p>
+<div id="tbl-verbosity" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-verbosity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Reward Modeling Results with Verbosity Penalty
+</figcaption>
+<div aria-describedby="tbl-verbosity-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 15%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Verbosity Results</th>
+<th>Overall Score</th>
+<th>Chat</th>
+<th>Chat Hard</th>
+<th>Safety</th>
+<th>Reasoning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>With Base Armo</td>
+<td>86.26</td>
+<td><strong>92.46</strong></td>
+<td>78.73</td>
+<td><strong>93.72</strong></td>
+<td>80.14</td>
+</tr>
+<tr class="even">
+<td>MLP Ensemble + Naive Uncertainty</td>
+<td><strong>86.56</strong></td>
+<td>89.39</td>
+<td><strong>80.26</strong></td>
+<td>93.22</td>
+<td><strong>83.36</strong></td>
+</tr>
+<tr class="odd">
+<td>MLP Ensemble Mean (no uncertainty)</td>
+<td>85.08</td>
+<td>88.27</td>
+<td>78.73</td>
+<td>92.55</td>
+<td>80.75</td>
+</tr>
+<tr class="even">
+<td>Bitter Uncertainty</td>
+<td>85.08</td>
+<td>88.27</td>
+<td>78.73</td>
+<td>92.55</td>
+<td>80.75</td>
+</tr>
+<tr class="odd">
+<td>GPT-4o (2024-05-13)</td>
+<td>84.6</td>
+<td>96.6</td>
+<td>70.4</td>
+<td>86.5</td>
+<td>84.9</td>
+</tr>
+<tr class="even">
+<td>Nvidia Nemotron-4-340B-Reward</td>
+<td>92.0</td>
+<td>95.8</td>
+<td>87.1</td>
+<td>91.5</td>
+<td>93.6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>One interpretation is that the length of responses in RewardBench is well-enough correlated with user preference that the verbosity penalty might be performing a sort of inadvertent reward hacking. In “Chat Hard”, shorter responses seem to predict user preference. The same might hold for Safety – the safest response, after all, has length zero! The opposite relation holds for the plain Chat and Reasoning categories, perhaps because longer responses are more likely to contain useful chains of thought.</p>
+<p>We also report the performance of training the baseline ArmoRM with reward regressions given by our MLP Ensemble instead of its less powerful regression layer. Oddly, this decreased performance across every metric, suggesting that ArmoRM’s ridge regression may be better generalizing to new data than our MLP Ensemble.</p>
+<p>In sum, incorporating dimension-wise uncertainty into ArmoRM produced modest improvements (and significant safety improvements) across three implementations.</p>
+</section>
+<section id="discussion" class="level1">
+<h1>Discussion</h1>
+<p>Based on our results, multidimensional reward modeling appears to be improved by the estimation of dimension-wise uncertainties. We have shown that MLP Ensembles can be used to quantify this uncertainty. We also presented three methods for incorporating uncertainty estimates into the scalar compression of rewards, including a new framing of reward modeling inspired by optimal transport theory. Rather surprisingly, all three performed comparably.</p>
+<p>The present work has a few shortcomings. Most glaringly, due to compute constraints, we haven’t quantified the ‘uncertainty’ of our reported accuracies. Anecdotally, performance of our models (and of ArmoRM) remained near-identical across trainings, but we should rigorously quantify this and report proper error bars.</p>
+<p>It would also be instructive to perform further hyperparameter training, particularly for the Wasserstein reward model.</p>
+<p>We hope our results motivate further work on incorporating uncertainty estimates into RLHF reward modeling. We particularly hope that the more general framing of preference optimization afforded by the Wasserstein reward model can inspire new approaches for aligning LLMs with human values.</p>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" role="list">
+
+</div>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>The release of the newer generations of Llama 3.1 models has since upset ArmoRM’s lead. At the time of writing, it ranks 18th in AllenAI’s RewardBench leaderboard and 8th among 8 billion parameter models.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+     </main>
+<!-- /main column -->  <script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>  </div> <!-- /content -->  <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script> 
+  
+</body></html>

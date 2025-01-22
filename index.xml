@@ -70,6 +70,7 @@ draft" vocab-term-identifier="https://credit.niso.org/contributor-roles/writing-
   (<xref alt="Knuth 1984" rid="ref-knuth84" ref-type="bibr">Knuth
   1984</xref>).</p>
   <p>And this is some more text!</p>
+  <p>Run my dear!</p>
 </sec>
 </body>
 
@@ -98,6 +99,841 @@ draft" vocab-term-identifier="https://credit.niso.org/contributor-roles/writing-
 </ref-list>
 </back>
 
+<sub-article article-type="notebook" id="nb-4-nb-1">
+<front-stub>
+<title-group>
+<article-title>Multi-dimensional Reward Modeling with
+Uncertainty</article-title>
+</title-group>
+<contrib-group>
+<contrib contrib-type="author" corresp="yes">
+<contrib-id contrib-id-type="orcid">0009-0006-4686-7488</contrib-id>
+<name>
+<surname>MacDonald</surname>
+<given-names>Kincaid</given-names>
+</name>
+<string-name>Kincaid MacDonald</string-name>
 
+<email>hey@kincaid.ink</email>
+<xref ref-type="aff" rid="aff-1-nb-1">a</xref>
+<xref ref-type="corresp" rid="cor-1-nb-1">&#x002A;</xref>
+</contrib>
+</contrib-group>
+<aff id="aff-1-nb-1">
+<institution-wrap>
+<institution>Princeton</institution>
+</institution-wrap>
+
+
+
+
+
+
+
+</aff>
+<author-notes>
+<corresp id="cor-1-nb-1">hey@kincaid.ink</corresp>
+</author-notes>
+<abstract>
+<p>We consider augmenting multidimensional reward models with
+uncertainty estimates, and find that this modestly improves the
+performance of (previously) state-of-the-art baseline model (ArmoRM).
+Along the way, we propose a new framework for preference learning
+inspired by optimal transport.</p>
+</abstract>
+</front-stub>
+
+<body>
+<sec id="introduction-nb-1">
+  <title>Introduction</title>
+  <p>Standard Reinforcement Learning from Human Feedback models that
+  diverse and enigmatic morass of norms known as ‘human values’ with a
+  single scalar, produced by a black-box LLM. Not only does this demand
+  a great deal from the black-box model, it also hampers efforts to: 1)
+  <italic>interpret</italic> the model’s enacted preferences, 2)
+  <italic>audit</italic> whether imperatives like ‘Safety first!’ are
+  obeyed in all contexts, and 3) <italic>steer</italic> the model
+  towards desired and away from undesirable human behavior.</p>
+  <p>Multidimensional reward learning has been proposed as a remedy to
+  these issues. Learn separate dimensions for different facets of human
+  value (honesty, helpfulness, verbosity, factuality) — then combine
+  them with flexible and optionally user-customizable weighting schemes.
+  Multidimensional reward models are both intrinsically interpretable
+  and frequently punch well above their model size class – an instance
+  of a ‘reverse alignment tax’. Here, at least, adding more
+  human-defined structure to the problem of learning human values is
+  beneficial.</p>
+  <p>Yet a fundamental problem in Multidimensional RLHF is how to
+  appropriately combine multiple dimensions of human value. How can a
+  model perform this compression without either
+  <italic>overemphasizing</italic> some facet of human preference, or
+  compressing so much that it loses the value of modeling multiple
+  reward dimensions?</p>
+  <p>In this project, we consider whether <italic>uncertainty
+  quantification</italic> can alleviate these challenges. After all,
+  there are situations where the correct value of a reward dimension
+  like ‘safety’ is unknowable without extra context. There are also
+  reward values (e.g. ‘code readability’) that, while useful in some
+  scenarios, simply don’t apply to others. Dimension-wise uncertainty
+  quantification could both equip reward models to better utilize extra
+  context-dependent dimensions and be used to more intelligently
+  compress the multiple reward dimensions into a scalar suitable for RL
+  optimization.</p>
+  <p>We also propose a new more flexible paradigm for preference
+  learning based on optimal transport theory, which replaces the
+  standard reward model trained with Bradley-Terry loss with the dual
+  form of the Wasserstein distance — and is able to natively combine
+  multiple uncertain reward dimensions without weighted sums.</p>
+  <p>Our results show that incorporating uncertainty into
+  multidimensional reward learning modestly improves the performance of
+  a once state-of-the-art model, and significantly improves its satefy
+  performance.</p>
+</sec>
+<sec id="related-work-nb-1">
+  <title>Related Work</title>
+  <p>Standard Reinforcement Learning from Human Feedback (RLHF) follows
+  (<xref alt="Ouyang2022-Traininglanguagemodelsfollowinstructions?" rid="ref-Ouyang2022-Traininglanguagemodelsfollowinstructions-nb-1" ref-type="bibr"><bold>Ouyang2022-Traininglanguagemodelsfollowinstructions?</bold></xref>)
+  in performing preference tuning on LLMs via a two-stage process:
+  first, training a (scalar-valued) reward model on (binary) preference
+  data using a Bradley-Terry objective; second, using a reinforcement
+  learning algorithm like Proximal Policy Optimization to fine-tune the
+  given LLM to maximize the learned reward function. This dual training
+  can be finicky, motivating approaches like DPO
+  (<xref alt="Rafailov2024-DirectPreferenceOptimizationYourLanguageb?" rid="ref-Rafailov2024-DirectPreferenceOptimizationYourLanguageb-nb-1" ref-type="bibr"><bold>Rafailov2024-DirectPreferenceOptimizationYourLanguageb?</bold></xref>)
+  to shortcut the first stage by learning an <italic>implicit</italic>
+  reward model through directly training the LLM on preference data.
+  Alas, such implicit reward models can be especially sensitive to any
+  distribution shifts between the training data and real-world
+  applications.</p>
+  <p>Multi-dimensional reward modeling moves in the opposite direction
+  by making the reward model from Stage 1 even more explicit. The
+  dominant practice is to learn a collection of reward models, trained
+  on datasets annotated to highlight various dimensions (helpfulness,
+  honesty, safety, coherence, reasoning, etc.) of valuable responses –
+  and then ‘compress’ these dimensions into a scalar suitable for Stage
+  2 optimization with a <italic>fixed</italic> weighted sum
+  (<xref alt="Ji2023-BeaverTailsImprovedSafetyAlignmentLLM?" rid="ref-Ji2023-BeaverTailsImprovedSafetyAlignmentLLM-nb-1" ref-type="bibr"><bold>Ji2023-BeaverTailsImprovedSafetyAlignmentLLM?</bold></xref>;
+  <xref alt="Wu-FineGrainedHumanFeedbackGivesBetter?" rid="ref-Wu-FineGrainedHumanFeedbackGivesBetter-nb-1" ref-type="bibr"><bold>Wu-FineGrainedHumanFeedbackGivesBetter?</bold></xref>;
+  <xref alt="Cui2024-UltraFeedbackBoostingLanguageModelsScaled?" rid="ref-Cui2024-UltraFeedbackBoostingLanguageModelsScaled-nb-1" ref-type="bibr"><bold>Cui2024-UltraFeedbackBoostingLanguageModelsScaled?</bold></xref>).
+  Some allow the sums’ weights to be changed to represent different
+  users’ preferences
+  (<xref alt="Wang2024-ArithmeticControlLLMsDiverseUser?" rid="ref-Wang2024-ArithmeticControlLLMsDiverseUser-nb-1" ref-type="bibr"><bold>Wang2024-ArithmeticControlLLMsDiverseUser?</bold></xref>).
+  The most sophisticated approaches use a dynamically-weighted sum based
+  on context, as in
+  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  Absolute-Rating Multi-Objective Reward Model (ArmoRM), which we will
+  discuss below.</p>
+  <p>Alternative approaches include
+  (<xref alt="Ethayarajh2024-KTOModelAlignmentProspectTheoretic?" rid="ref-Ethayarajh2024-KTOModelAlignmentProspectTheoretic-nb-1" ref-type="bibr"><bold>Ethayarajh2024-KTOModelAlignmentProspectTheoretic?</bold></xref>),
+  which adapts psychologists Amos Tversky and Daniel Kahneman’s Prospect
+  Theory to LLM alignment; and
+  (<xref alt="Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences?" rid="ref-Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences-nb-1" ref-type="bibr"><bold>Chakraborty2024-MaxMinRLHFAlignmentDiverseHumanPreferences?</bold></xref>),
+  who eschews the linear combination of rewards to learn directly from a
+  collection of specialized reward models via an expectation
+  maximization objective modeled after the Egalitarian Principle of
+  social choice theory.</p>
+  <p>Some have also investigated the intersection of uncertainty
+  estimation with reward modeling.
+  (<xref alt="Eisenstein2024-RewardModelEnsemblesMitigatenot?" rid="ref-Eisenstein2024-RewardModelEnsemblesMitigatenot-nb-1" ref-type="bibr"><bold>Eisenstein2024-RewardModelEnsemblesMitigatenot?</bold></xref>)
+  found that ensembling (scalar-valued) reward models improved
+  robustness against reward hacking. A competing approach to uncertainty
+  estimation, Epistemic Neural Networks
+  (<xref alt="Osband2023-EpistemicNeuralNetworks?" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr"><bold>Osband2023-EpistemicNeuralNetworks?</bold></xref>),
+  has been found useful in active learning: uncertainty-equipped reward
+  values can prioritize data in a fine-tuning corpus that best increases
+  LLM performance
+  (<xref alt="Dwaracherla2024-EfficientExplorationLLMs?" rid="ref-Dwaracherla2024-EfficientExplorationLLMs-nb-1" ref-type="bibr"><bold>Dwaracherla2024-EfficientExplorationLLMs?</bold></xref>).</p>
+</sec>
+<sec id="armorm-nb-1">
+  <title>ArmoRM</title>
+  <p>For direct comparability with previous work, we build our
+  uncertainty-aware reward model on top of what may be the most popular
+  multidimensional reward model,
+  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  “Absolute-Rating Multi-Objective Reward Model”. ArmoRM was, for a
+  time, the best performing 8b parameter reward model and (at the time
+  of release) performed competitively with 70b parameter
+  models.<xref ref-type="fn" rid="fn1-nb-1">1</xref></p>
+  <p>Here, we give a brief overview of the ArmoRM architecture. We then
+  present some results on the base ArmoRM model that raise questions
+  about its effectiveness at handling multiple dimensions, which
+  motivate our uncertainty-aware paradigm. We’ll also note that we were
+  unable to replicate ArmoRM’s published scores, even using the authors’
+  own training code – which, rather troublingly, has a severe bug that
+  overrides one of the main pieces of their published architecture. Full
+  details on this are in the appendix.</p>
+  <p>First, an overview of the method. Intuitively, ArmoRM performs
+  context-dependent weighting of multiple reward dimensions. It adapts
+  the importance assigned to ‘verbosity’ or ‘honesty’ to the context
+  given by the prompt. In theory, this should allow niche reward
+  dimensions like ‘code readability’ to be upweighted when writing code
+  and ignored otherwise. It should also allow, e.g., ‘helpfulness’ to be
+  prioritized over safety in contexts determined to be benign, and vice
+  versa.</p>
+  <p>Concretely, this consists of three pieces: an LLM embedding module,
+  a linear regression layer, and an MLP gating layer. First, a given
+  prompt and response are embedded by taking activations from the final
+  layer of the LLM module. Then, the linear regression layer maps the
+  embedded prompt-response pairs to 19 dimensions of reward values. The
+  gating layer then maps the prompt embedding to a set of <italic>gating
+  weights</italic> <inline-formula><alternatives>
+  <tex-math><![CDATA[w_i]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+  for each of the 19 reward dimensions. Finally, a weighted linear sum
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[\sum_{i} w_i r_i]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mo>∑</mml:mo><mml:mi>i</mml:mi></mml:msub><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:msub><mml:mi>r</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:mrow></mml:math></alternatives></inline-formula>
+  combines the multiple dimensions into a scalar reward value.</p>
+  <fig>
+    <caption><p>ArmoRM’s Model Architecture (from
+    (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>))</p></caption>
+    <graphic mimetype="image" mime-subtype="png" xlink:href="images/ArmoRM-Model-Architecture-Sketch.png" />
+  </fig>
+  <p>The regression layer is trained with Ridge regression on a
+  combination of 8 multi-dimensional datasets, each of which has 1-5
+  dimensions – yielding 19 dimensions in aggregate, with 500k samples.
+  During training, dimensions unused by the current input are
+  masked.</p>
+  <p>The gating layer is trained with a Bradley-Terry loss on an
+  aggregate of 10 binary preference datasets with over 800K aggregate
+  examples.</p>
+  <p>The LLM module used for embedding is treated as a ‘frozen stem’ and
+  receives no additional tuning during ArmoRM’s training.</p>
+  <p>ArmoRM has one final bit of engineering. Noting that reward models
+  can have a bias for undesirably long responses, the authors explicitly
+  correct for this with a <italic>verbosity penalty</italic>. After
+  training the linear regression layer, they subtract the verbosity
+  dimension from the other reward dimensions until each dimension’s
+  correlation with verbosity falls below a hand-tuned threshold.</p>
+  <p>Unfortunately, in the authors’ public implementation of ArmoRM,
+  this verbosity penalty, once calculated, is never actually used. It’s
+  unclear whether this bug was present in their internal code – even
+  after modifying their code to use the verbosity penalty, we’ve been
+  unable to reproduce their results.</p>
+  <sec id="armorms-reward-dimensions-are-highly-correlated-and-only-a-subset-are-actually-used-nb-1">
+    <title>ArmoRM’s reward dimensions are highly correlated, and only a
+    subset are actually used</title>
+    <p>ArmoRM learns 19 reward dimensions. Are these encoding usefully
+    different information? And how frequently is each dimension in
+    use?</p>
+    <p>To investigate, we ran a pre-trained copy of ArmoRM on Frick’s
+    Preference Proxy Evaluations dataset (from Oct. 2024) – a newer,
+    harder reward benchmark which should be unknown to ArmoRM. We
+    visualized each reward dimension over the space of embedded
+    responses, which we’ve plotted in 2 dimensions using the
+    dimensionality-reduction tool PHATE
+    (<xref alt="Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala?" rid="ref-Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala-nb-1" ref-type="bibr"><bold>Moon2019-Visualizingstructuretransitionshighdimensionalbiologicala?</bold></xref>).
+    As
+    (<xref alt="fig-armo-reward-variation?" rid="ref-fig-armo-reward-variation-nb-1" ref-type="bibr"><bold>fig-armo-reward-variation?</bold></xref>)
+    illustrates, many of ArmoRM’s reward dimensions show striking
+    correlations – all of the code-related dimensions, for instance,
+    show the same pattern of coloration across the space of responses,
+    even when (as with ‘code-complexity’ and ‘code-readability’) their
+    stated values are in direct conflict.</p>
+    <fig id="fig-armo-reward-variation-nb-1">
+      <caption><p>Variation of each reward dimension over the space of
+      responses, visualized on a dimensionality reduction with
+      PHATE.</p></caption>
+      <graphic mimetype="image" mime-subtype="png" xlink:href="images/rewards-over-response-space.png" />
+    </fig>
+    <p>The same visualization of the reward gating coefficients
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[w_i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    reveals that most reward dimensions are ignored entirely by ArmoRM’s
+    gating layer, receiving zero weight over the majority of contexts
+    ((<xref alt="fig-armo-gating-variation?" rid="ref-fig-armo-gating-variation-nb-1" ref-type="bibr"><bold>fig-armo-gating-variation?</bold></xref>)).
+    Only five reward dimensions show significant non-zero weighting.</p>
+    <fig id="fig-armo-gating-variation-nb-1">
+      <caption><p>Variation of the gating coefficient for each reward
+      dimension, coloring the space of responses, as represented by a
+      PHATE dimensionality reduction.</p></caption>
+      <graphic mimetype="image" mime-subtype="png" xlink:href="images/gating-coefficients-over-response-space.png" />
+    </fig>
+    <p>These results suggest either that the underlying reward
+    dimensions don’t have much usefully different information, or (more
+    probably) that the combination of ArmoRM’s linear regression layer
+    and the untrained Llama 8b stem underneath isn’t powerful enough to
+    differentiate them. As a result, of the 19 dimensions ArmoRM uses,
+    only 5 appear to be consistently used.</p>
+  </sec>
+</sec>
+<sec id="wasserstein-reward-modeling-preference-learning-as-optimal-transport-nb-1">
+  <title>Wasserstein Reward Modeling: Preference Learning as Optimal
+  Transport</title>
+  <p>Consider a binary preference dataset, which consists of a set of
+  prompts <inline-formula><alternatives>
+  <tex-math><![CDATA[P]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>P</mml:mi></mml:math></alternatives></inline-formula>
+  and, for each <inline-formula><alternatives>
+  <tex-math><![CDATA[p_i \in P]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>p</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo>∈</mml:mo><mml:mi>P</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>,
+  responses <inline-formula><alternatives>
+  <tex-math><![CDATA[r_1 \in R_1, r_2 \in R_2]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>r</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo>∈</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>r</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mo>∈</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:mrow></mml:math></alternatives></inline-formula>,
+  where <inline-formula><alternatives>
+  <tex-math><![CDATA[R_1]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:math></alternatives></inline-formula>
+  is the distribution of preferred and <inline-formula><alternatives>
+  <tex-math><![CDATA[R_2]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:math></alternatives></inline-formula>
+  the distribution of rejected responses. The task of preference tuning
+  is to guide the distribution of student responses
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[R_s]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+  to be ‘close’ to <inline-formula><alternatives>
+  <tex-math><![CDATA[R_1]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:math></alternatives></inline-formula>
+  and ‘far’ from <inline-formula><alternatives>
+  <tex-math><![CDATA[R_2]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:math></alternatives></inline-formula>.</p>
+  <p>The Bradley-Terry loss treats this as a pairwise classification
+  problem, minimizing a binary cross-entropy loss between the student’s
+  probability of generating from <inline-formula><alternatives>
+  <tex-math><![CDATA[R_1]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:math></alternatives></inline-formula>
+  and its probability of generating from <inline-formula><alternatives>
+  <tex-math><![CDATA[R_2]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:math></alternatives></inline-formula>.</p>
+  <p>But we can also formulate preference tuning as an optimal transport
+  problem, with a loss given by a distributional distance between
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[R_s]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+  and <inline-formula><alternatives>
+  <tex-math><![CDATA[R_1]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:math></alternatives></inline-formula>.
+  One of the strongest such distances is the Wasserstein distance,
+  defined as</p>
+  <p><disp-formula><alternatives>
+  <tex-math><![CDATA[W_1(\mu, \nu)=\frac{1}{K} \sup _{\|f\|_L \leq K} \mathbb{E}_{x \sim \mu}[f(x)]-\mathbb{E}_{y \sim \nu}[f(y)]]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>μ</mml:mi><mml:mo>,</mml:mo><mml:mi>ν</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mfrac><mml:mn>1</mml:mn><mml:mi>K</mml:mi></mml:mfrac><mml:munder><mml:mo>sup</mml:mo><mml:mrow><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>f</mml:mi><mml:msub><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>L</mml:mi></mml:msub><mml:mo>≤</mml:mo><mml:mi>K</mml:mi></mml:mrow></mml:munder><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>x</mml:mi><mml:mo>∼</mml:mo><mml:mi>μ</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>x</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mo>−</mml:mo><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>y</mml:mi><mml:mo>∼</mml:mo><mml:mi>ν</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>y</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></p>
+  <p>Intuitively, the Wasserstein distance (also called the ‘Earth
+  Mover’s Distance’) measures the minimum energy required to transport
+  all of the ‘mass’ from the first distribution to the second by
+  searching over all possible “transport plans” between the
+  distributions. Equivalently, via the Kantorovich-Rubinstein duality,
+  it can be written as a search over the space of Lipschitz-constrained
+  scalar functions
+  (<xref alt="Arjovsky2017-WassersteinGenerativeAdversarialNetworks?" rid="ref-Arjovsky2017-WassersteinGenerativeAdversarialNetworks-nb-1" ref-type="bibr"><bold>Arjovsky2017-WassersteinGenerativeAdversarialNetworks?</bold></xref>):</p>
+  <p><disp-formula><alternatives>
+  <tex-math><![CDATA[W_1(\mu, \nu)=\frac{1}{K} \sup _{\|f\|_L \leq K} \mathbb{E}_{x \sim \mu}[f(x)]-\mathbb{E}_{y \sim \nu}[f(y)]]]></tex-math>
+  <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>μ</mml:mi><mml:mo>,</mml:mo><mml:mi>ν</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mfrac><mml:mn>1</mml:mn><mml:mi>K</mml:mi></mml:mfrac><mml:munder><mml:mo>sup</mml:mo><mml:mrow><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>f</mml:mi><mml:msub><mml:mo stretchy="false" form="postfix">∥</mml:mo><mml:mi>L</mml:mi></mml:msub><mml:mo>≤</mml:mo><mml:mi>K</mml:mi></mml:mrow></mml:munder><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>x</mml:mi><mml:mo>∼</mml:mo><mml:mi>μ</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>x</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mo>−</mml:mo><mml:msub><mml:mi>𝔼</mml:mi><mml:mrow><mml:mi>y</mml:mi><mml:mo>∼</mml:mo><mml:mi>ν</mml:mi></mml:mrow></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>y</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></p>
+  <p>A function maximizing this (called a “witness function”) adopts
+  maximally distinct values between the first distribution and the
+  second, thus ‘bearing witness’ to their differences.</p>
+  <p>This suggests a computationally tractable way to approximate
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[W_1(R_s, R_1)]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>.
+  We can view each <inline-formula><alternatives>
+  <tex-math><![CDATA[R]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>R</mml:mi></mml:math></alternatives></inline-formula>
+  as a manifold in the space <inline-formula><alternatives>
+  <tex-math><![CDATA[\mathbb{R}^{N \times M}]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msup><mml:mi>ℝ</mml:mi><mml:mrow><mml:mi>N</mml:mi><mml:mo>×</mml:mo><mml:mi>M</mml:mi></mml:mrow></mml:msup></mml:math></alternatives></inline-formula>,
+  where each <inline-formula><alternatives>
+  <tex-math><![CDATA[r]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>r</mml:mi></mml:math></alternatives></inline-formula>
+  combines an LLM embedding of the prompt with some representation of
+  the response (e.g. another LLM embedding, or equivalent
+  featurization). First, we compute <inline-formula><alternatives>
+  <tex-math><![CDATA[W_1(R_1, R_2)]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+  by training a witness function <inline-formula><alternatives>
+  <tex-math><![CDATA[w:\mathbb{R}^{2N} \to \mathbb{R}]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>w</mml:mi><mml:mo>:</mml:mo><mml:msup><mml:mi>ℝ</mml:mi><mml:mrow><mml:mn>2</mml:mn><mml:mi>N</mml:mi></mml:mrow></mml:msup><mml:mo>→</mml:mo><mml:mi>ℝ</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+  to maximally distinguish between these ‘training’ distributions. We
+  can then apply this witness function to the student distribution,
+  obtaining an upper bound: <inline-formula><alternatives>
+  <tex-math><![CDATA[W_1(R_s, R_1) \leq w(R_1) - w(R_s)]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>W</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>≤</mml:mo><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>−</mml:mo><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>.</p>
+  <p>Note that this <inline-formula><alternatives>
+  <tex-math><![CDATA[w]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>w</mml:mi></mml:math></alternatives></inline-formula>
+  plays the same role as a reward model. It’s a scalar-valued function
+  over the space of prompts and responses for which higher values for a
+  given prompt predict the preferred response. Furthermore, minimizing
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[w(R_s)]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+  (e.g. via PPO) achieves the preference-tuning objective.</p>
+  <p>Thus far we have shown that a Bradley-Terry-like model of
+  preferences can be recovered from an optimal-transport framing of
+  preference learning. However, the dual-Wasserstein definition of the
+  reward model has extra flexibility that makes it attractive for
+  multidimensional reward learning.</p>
+  <list list-type="order">
+    <list-item>
+      <p>The witness function’s ‘prompt-response’ input space can
+      combine LLM embeddings with arbitrary additional features. Thus,
+      if one has reward dimensions describing verbosity, helpfulness,
+      truthfulness (etc.), these can be incorporated as extra dimensions
+      supplied to the witness function. In this way, Wasserstein reward
+      modeling provides a natural framework for ‘compressing’ multiple
+      reward dimensions into a form suitable for RL optimization.</p>
+    </list-item>
+    <list-item>
+      <p>Unlike Bradley-Terry reward modeling, Wasserstein reward
+      modeling works even without pairwise mappings between the
+      preferred and rejected response distributions. For example, one
+      could train with a dataset of curated <italic>exceptional</italic>
+      responses as <inline-formula><alternatives>
+      <tex-math><![CDATA[R_1]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:math></alternatives></inline-formula>
+      and a corpus of average responses as
+      <inline-formula><alternatives>
+      <tex-math><![CDATA[R_2]]></tex-math>
+      <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:math></alternatives></inline-formula>.</p>
+    </list-item>
+    <list-item>
+      <p>This also allows for multiple reward samples per
+      prompt-response input. For instance, if using multiple uncertain
+      reward dimensions as additional input features, uncertainty can be
+      represented by a distribution over the reward dimensions – and we
+      can directly train with this distribution.</p>
+    </list-item>
+  </list>
+  <p>We’ll later describe a specific adaptation of Wasserstein reward
+  modeling to the regime of multiple uncertain reward dimensions. But we
+  note that the utility of this framing isn’t limited to our setting and
+  might also prove advantageous in more general settings, like combining
+  multiple preference datasets without catastrophic forgetting; or
+  providing the optimization guarantees of a stronger distributional
+  distance (especially if the witness function was periodically
+  re-trained on the current student distribution).</p>
+  <p>Wasserstein reward modeling also addresses the “Multidimensional
+  Collapse” problem from the introduction: if we learn multiple reward
+  dimensions only to compress them into a scalar suitable for RL
+  optimization, how much information are we losing? In the Wasserstein
+  case, potentially none at all. Optimizing
+  <inline-formula><alternatives>
+  <tex-math><![CDATA[R_s]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+  to minimize <inline-formula><alternatives>
+  <tex-math><![CDATA[w(R_s)]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>R</mml:mi><mml:mi>s</mml:mi></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>
+  will (if successful) <italic>recreate</italic> the input distribution
+  of multi-dimensional reward features associated with each prompt. In
+  this way, the reward from <inline-formula><alternatives>
+  <tex-math><![CDATA[w]]></tex-math>
+  <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>w</mml:mi></mml:math></alternatives></inline-formula>
+  is viewed not as a single-dimensional descriptor of “human values”,
+  but a <italic>distance</italic> between the student’s representation
+  of human values and the teacher’s representation.</p>
+</sec>
+<sec id="methods-nb-1">
+  <title>Methods</title>
+  <sec id="uncertainty-quantification-nb-1">
+    <title>Uncertainty Quantification</title>
+    <p>To quantify the uncertainty of each reward dimension, we use an
+    ensemble of 100 regression layers trained from different random
+    initializations. We can then estimate uncertainty from the
+    ensemble’s distribution of outputs – either by taking the variance
+    per dimension or using the distribution of values directly. Of those
+    approaches we tried for estimating uncertainty, only an ensemble of
+    multi-layer perceptrons passed the sanity check of reporting higher
+    uncertainties on out-of-distribution data. An ensemble of linear
+    networks (following ArmoRM’s regression layer) and an epistemic
+    neural network
+    (<xref alt="Osband2023-EpistemicNeuralNetworks?" rid="ref-Osband2023-EpistemicNeuralNetworks-nb-1" ref-type="bibr"><bold>Osband2023-EpistemicNeuralNetworks?</bold></xref>)
+    both reported mostly uniform uncertainties across datasets (see
+    (<xref alt="fig-ensemble-uncertainties?" rid="ref-fig-ensemble-uncertainties-nb-1" ref-type="bibr"><bold>fig-ensemble-uncertainties?</bold></xref>)).</p>
+    <fig id="fig-ensemble-uncertainties-nb-1">
+      <table-wrap>
+        <table>
+          <colgroup>
+            <col width="50%" />
+            <col width="50%" />
+          </colgroup>
+          <tbody>
+            <tr>
+              <td align="left"><p specific-use="wrapper">
+                <boxed-text>
+                  <fig>
+                    <caption><p>Linear Ensemble</p></caption>
+                    <graphic mimetype="image" mime-subtype="png" xlink:href="images/Linear-Ensemble.png" />
+                  </fig>
+                </boxed-text>
+              </p></td>
+              <td align="left"><p specific-use="wrapper">
+                <boxed-text>
+                  <fig>
+                    <caption><p>MLP Ensemble</p></caption>
+                    <graphic mimetype="image" mime-subtype="png" xlink:href="images/MLP-Ensemble.png" />
+                  </fig>
+                </boxed-text>
+              </p></td>
+            </tr>
+          </tbody>
+        </table>
+      </table-wrap>
+    </fig>
+    <p>The uncertainties per reward dimension from this MLP Ensemble
+    (Figure
+    (<xref alt="fig-uncertainties-per-dimension?" rid="ref-fig-uncertainties-per-dimension-nb-1" ref-type="bibr"><bold>fig-uncertainties-per-dimension?</bold></xref>))
+    show that the variance across the ensemble’s samples for a given
+    response was, for most dimensions, a significant portion of the
+    variance across all responses.</p>
+    <fig id="fig-uncertainties-per-dimension-nb-1">
+      <caption><p>Uncertainties per reward dimension (blue) versus
+      variance in that dimension across responses (orange)</p></caption>
+      <graphic mimetype="image" mime-subtype="jpeg" xlink:href="images/MLP-Ensemble-Uncertainties-by-dimension.jpeg" />
+    </fig>
+  </sec>
+  <sec id="reward-compression-nb-1">
+    <title>Reward Compression</title>
+    <p>To use these uncertainties to improve reward compression, we
+    compare three approaches against ArmoRM’s baseline. Let
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[x,o]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>x</mml:mi><mml:mo>,</mml:mo><mml:mi>o</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>
+    be the LLM embeddings of the prompt and response, respectively; let
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[r(\vec{o}) = \vec{r}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>r</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mover><mml:mi>o</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mover><mml:mi>r</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover></mml:mrow></mml:math></alternatives></inline-formula>
+    be ArmoRM’s multidimensional reward regression layer, and
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[r_u(\vec{o}) = \vec{r}, \vec{u}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>r</mml:mi><mml:mi>u</mml:mi></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mover><mml:mi>o</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mover><mml:mi>r</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover><mml:mo>,</mml:mo><mml:mover><mml:mi>u</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover></mml:mrow></mml:math></alternatives></inline-formula>
+    denote the ensembled MLP version of this layer. Let
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[g(\vec{x}) = \vec{u}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>g</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mover><mml:mi>x</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:mover><mml:mi>u</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover></mml:mrow></mml:math></alternatives></inline-formula>
+    be ArmoRM’s gating layer.</p>
+    <p>Each model described below is trained from scratch on the
+    aggregate binary preference dataset collected by the authors. We use
+    a learning rate of <inline-formula><alternatives>
+    <tex-math><![CDATA[10^{-5}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msup><mml:mn>10</mml:mn><mml:mrow><mml:mi>−</mml:mi><mml:mn>5</mml:mn></mml:mrow></mml:msup></mml:math></alternatives></inline-formula>,
+    a batch size of 1024, and train for 10000 steps.</p>
+    <p><bold>Naive Uncertainty.</bold> Intuitively, the weights assigned
+    to each reward dimension should be lower for reward dimensions with
+    high uncertainty. We implement this directly into the baseline
+    ArmoRM architecture by modifying the output of the gating layer
+    with</p>
+    <p><disp-formula><alternatives>
+    <tex-math><![CDATA[ w_i' = \text{softmax}(w_i - \alpha u_i) ]]></tex-math>
+    <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mi>′</mml:mi><mml:mo>=</mml:mo><mml:mtext mathvariant="normal">softmax</mml:mtext><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo>−</mml:mo><mml:mi>α</mml:mi><mml:msub><mml:mi>u</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></p>
+    <p>where <inline-formula><alternatives>
+    <tex-math><![CDATA[w_i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    is the weight assigned to dimension <inline-formula><alternatives>
+    <tex-math><![CDATA[i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>i</mml:mi></mml:math></alternatives></inline-formula>
+    by the gating layer, and <inline-formula><alternatives>
+    <tex-math><![CDATA[u_i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>u</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    is the variance in dimension <inline-formula><alternatives>
+    <tex-math><![CDATA[i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>i</mml:mi></mml:math></alternatives></inline-formula>
+    of samples from the MLP Reward Ensemble. The loss and training
+    proceed identically to ArmoRM.</p>
+    <p><bold>Bitter Uncertainty.</bold> Here, we feed the uncertainties
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[u_i]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>u</mml:mi><mml:mi>i</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    as extra inputs to the gating layer, taking
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[w_i = g(x, u)]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>w</mml:mi><mml:mi>i</mml:mi></mml:msub><mml:mo>=</mml:mo><mml:mi>g</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mi>x</mml:mi><mml:mo>,</mml:mo><mml:mi>u</mml:mi><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></inline-formula>.
+    The rest proceeds identically to ArmoRM.</p>
+    <p>For this and the previous method, as well as the baseline ArmoRM,
+    we used the training hyperparameters reported by
+    (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>).</p>
+    <p><bold>Wasserstein Uncertainty.</bold> We adapt the framework of
+    Wasserstein Reward Modeling to the setting of multiple uncertain
+    dimensions. The input space for the witness function is a
+    concatenation of the prompt embedding <inline-formula><alternatives>
+    <tex-math><![CDATA[x]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>x</mml:mi></mml:math></alternatives></inline-formula>
+    and the reward dimensions <inline-formula><alternatives>
+    <tex-math><![CDATA[\vec{r}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mover><mml:mi>r</mml:mi><mml:mo accent="true">→</mml:mo></mml:mover></mml:math></alternatives></inline-formula>.
+    To further reduce the dimension of the prompt embedding, we use an
+    additional feature extractor <inline-formula><alternatives>
+    <tex-math><![CDATA[f: \mathbb{R}^{4096} \to \mathbb{R}^{8}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>f</mml:mi><mml:mo>:</mml:mo><mml:msup><mml:mi>ℝ</mml:mi><mml:mn>4096</mml:mn></mml:msup><mml:mo>→</mml:mo><mml:msup><mml:mi>ℝ</mml:mi><mml:mn>8</mml:mn></mml:msup></mml:mrow></mml:math></alternatives></inline-formula>
+    which is trained alongside the witness function
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[w:\mathbb{R}^{8+19} \to \mathbb{R}]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>w</mml:mi><mml:mo>:</mml:mo><mml:msup><mml:mi>ℝ</mml:mi><mml:mrow><mml:mn>8</mml:mn><mml:mo>+</mml:mo><mml:mn>19</mml:mn></mml:mrow></mml:msup><mml:mo>→</mml:mo><mml:mi>ℝ</mml:mi></mml:mrow></mml:math></alternatives></inline-formula>.
+    We train with batches of prompt-response pairs with embeddings
+    <inline-formula><alternatives>
+    <tex-math><![CDATA[x_1, o_1]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>x</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>o</mml:mi><mml:mn>1</mml:mn></mml:msub></mml:mrow></mml:math></alternatives></inline-formula>
+    and <inline-formula><alternatives>
+    <tex-math><![CDATA[x_2, o_2]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:msub><mml:mi>x</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>o</mml:mi><mml:mn>2</mml:mn></mml:msub></mml:mrow></mml:math></alternatives></inline-formula>,
+    and use the dual-Wasserstein loss:</p>
+    <p><disp-formula><alternatives>
+    <tex-math><![CDATA[
+    l(b_1, b_2) = \sum_i^B \sum_j^E w([f(o_{1i}),r_j(x_{1i})])  - \sum_i^B \sum_j^E w([f(o_{2i}),r_j(x_{2i})])
+    ]]></tex-math>
+    <mml:math display="block" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mrow><mml:mi>l</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>b</mml:mi><mml:mn>1</mml:mn></mml:msub><mml:mo>,</mml:mo><mml:msub><mml:mi>b</mml:mi><mml:mn>2</mml:mn></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>=</mml:mo><mml:munderover><mml:mo>∑</mml:mo><mml:mi>i</mml:mi><mml:mi>B</mml:mi></mml:munderover><mml:munderover><mml:mo>∑</mml:mo><mml:mi>j</mml:mi><mml:mi>E</mml:mi></mml:munderover><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>o</mml:mi><mml:mrow><mml:mn>1</mml:mn><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>,</mml:mo><mml:msub><mml:mi>r</mml:mi><mml:mi>j</mml:mi></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>x</mml:mi><mml:mrow><mml:mn>1</mml:mn><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>−</mml:mo><mml:munderover><mml:mo>∑</mml:mo><mml:mi>i</mml:mi><mml:mi>B</mml:mi></mml:munderover><mml:munderover><mml:mo>∑</mml:mo><mml:mi>j</mml:mi><mml:mi>E</mml:mi></mml:munderover><mml:mi>w</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:mrow><mml:mo stretchy="true" form="prefix">[</mml:mo><mml:mi>f</mml:mi><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>o</mml:mi><mml:mrow><mml:mn>2</mml:mn><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo>,</mml:mo><mml:msub><mml:mi>r</mml:mi><mml:mi>j</mml:mi></mml:msub><mml:mrow><mml:mo stretchy="true" form="prefix">(</mml:mo><mml:msub><mml:mi>x</mml:mi><mml:mrow><mml:mn>2</mml:mn><mml:mi>i</mml:mi></mml:mrow></mml:msub><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">]</mml:mo></mml:mrow><mml:mo stretchy="true" form="postfix">)</mml:mo></mml:mrow></mml:mrow></mml:math></alternatives></disp-formula></p>
+    <p>where <inline-formula><alternatives>
+    <tex-math><![CDATA[r_j]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:msub><mml:mi>r</mml:mi><mml:mi>j</mml:mi></mml:msub></mml:math></alternatives></inline-formula>
+    denotes the <inline-formula><alternatives>
+    <tex-math><![CDATA[j]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>j</mml:mi></mml:math></alternatives></inline-formula>-th
+    MLP of the ensemble of <inline-formula><alternatives>
+    <tex-math><![CDATA[E]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>E</mml:mi></mml:math></alternatives></inline-formula>
+    MLPs, and <inline-formula><alternatives>
+    <tex-math><![CDATA[B]]></tex-math>
+    <mml:math display="inline" xmlns:mml="http://www.w3.org/1998/Math/MathML"><mml:mi>B</mml:mi></mml:math></alternatives></inline-formula>
+    denotes the batch size. We find that small batches (~128) improve
+    training stability.</p>
+  </sec>
+</sec>
+<sec id="results-nb-1">
+  <title>Results</title>
+  <p>We evaluated these three models and the baseline ArmoRM
+  implementation on AllenAI’s <italic>RewardBench</italic>
+  (<xref alt="Lambert2024-RewardBenchEvaluatingRewardModelsLanguage?" rid="ref-Lambert2024-RewardBenchEvaluatingRewardModelsLanguage-nb-1" ref-type="bibr"><bold>Lambert2024-RewardBenchEvaluatingRewardModelsLanguage?</bold></xref>).
+  Note that we were unable to reproduce
+  (<xref alt="Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?" rid="ref-Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga-nb-1" ref-type="bibr"><bold>Wang2024-InterpretablePreferencesMultiObjectiveRewardModelinga?</bold></xref>)’s
+  published scores for ArmoRM; we below report the scores we obtained
+  training each model from scratch. For context, we include the
+  RewardBench scores of two other top performing models.</p>
+  <p>(<xref alt="tbl-no-verbosity?" rid="ref-tbl-no-verbosity-nb-1" ref-type="bibr"><bold>tbl-no-verbosity?</bold></xref>)
+  shows our results. They suggest that <italic>any</italic> form of
+  incorporated uncertainty produces a significant increase in
+  RewardBench’s safety dimension (+10%), resulting in a modest increase
+  in overall score. Reasoning and Chat performance were mostly
+  unaffected, and performance decreased by 3-6% on Chat Hard.</p>
+  <p>Interestingly, even though Wasserstein Uncertainty Modeling and the
+  Naive (and Bitter) Uncertainty approaches use completely different
+  frameworks, they achieve comparable performance. This may indicate
+  that the Wasserstein approach of considering multiple samples at the
+  same time was neither significantly worse nor better than the summary
+  approach of taking the variance. On the other hand, that the
+  Wasserstein framework achieved similar performance to adaptations of
+  refined, hand-tuned approaches like ArmoRM may indicate its
+  utility.</p>
+  <fig id="tbl-no-verbosity-nb-1">
+    <caption><p>Reward Modeling Results with and without
+    Uncertainty</p></caption>
+    <table-wrap>
+      <table>
+        <colgroup>
+          <col width="34%" />
+          <col width="17%" />
+          <col width="12%" />
+          <col width="12%" />
+          <col width="12%" />
+          <col width="12%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>No Verbosity</th>
+            <th>Overall Score</th>
+            <th>Chat</th>
+            <th>Chat Hard</th>
+            <th>Safety</th>
+            <th>Reasoning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ArmoRM</td>
+            <td>82.51</td>
+            <td>98.60</td>
+            <td><bold>69.74</bold></td>
+            <td>78.94</td>
+            <td>82.78</td>
+          </tr>
+          <tr>
+            <td>Naive Uncertainty</td>
+            <td>84.02</td>
+            <td><bold>99.16</bold></td>
+            <td>63.38</td>
+            <td>89.01</td>
+            <td><bold>84.54</bold></td>
+          </tr>
+          <tr>
+            <td>Bitter Uncertainty</td>
+            <td><bold>84.15</bold></td>
+            <td>98.60</td>
+            <td>66.67</td>
+            <td><bold>89.76</bold></td>
+            <td>81.57</td>
+          </tr>
+          <tr>
+            <td>Wasserstein Uncertainty</td>
+            <td>83.83</td>
+            <td>96.93</td>
+            <td>66.89</td>
+            <td>87.99</td>
+            <td>83.54</td>
+          </tr>
+          <tr>
+            <td>GPT-4o (2024-05-13)</td>
+            <td>84.6</td>
+            <td>96.6</td>
+            <td>70.4</td>
+            <td>86.5</td>
+            <td>84.9</td>
+          </tr>
+          <tr>
+            <td>Nvidia Nemotron-4-340B-Reward</td>
+            <td>92.0</td>
+            <td>95.8</td>
+            <td>87.1</td>
+            <td>91.5</td>
+            <td>93.6</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+  </fig>
+  <p>As discussed above, ArmoRM’s paper describes a verbosity penalty
+  meant to counteract the tendency of reward models to reward response
+  length independently from content. However, due to a bug, their code
+  doesn’t actually apply this penalty.
+  (<xref alt="tbl-verbosity?" rid="ref-tbl-verbosity-nb-1" ref-type="bibr"><bold>tbl-verbosity?</bold></xref>)
+  shows results for the above models with reward dimensions decoupled
+  from verbosity. This change has curious effects: it improves
+  performance on Chat Hard by ~10 points while decreasing performance on
+  Chat by the same. For the base ArmoRM model (but not the uncertainty
+  equipped) models, it improves safety dramatically, though across all
+  models it decreases reasoning performance by a few points.</p>
+  <fig id="tbl-verbosity-nb-1">
+    <caption><p>Reward Modeling Results with Verbosity
+    Penalty</p></caption>
+    <table-wrap>
+      <table>
+        <colgroup>
+          <col width="38%" />
+          <col width="16%" />
+          <col width="12%" />
+          <col width="12%" />
+          <col width="12%" />
+          <col width="12%" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Verbosity Results</th>
+            <th>Overall Score</th>
+            <th>Chat</th>
+            <th>Chat Hard</th>
+            <th>Safety</th>
+            <th>Reasoning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>With Base Armo</td>
+            <td>86.26</td>
+            <td><bold>92.46</bold></td>
+            <td>78.73</td>
+            <td><bold>93.72</bold></td>
+            <td>80.14</td>
+          </tr>
+          <tr>
+            <td>MLP Ensemble + Naive Uncertainty</td>
+            <td><bold>86.56</bold></td>
+            <td>89.39</td>
+            <td><bold>80.26</bold></td>
+            <td>93.22</td>
+            <td><bold>83.36</bold></td>
+          </tr>
+          <tr>
+            <td>MLP Ensemble Mean (no uncertainty)</td>
+            <td>85.08</td>
+            <td>88.27</td>
+            <td>78.73</td>
+            <td>92.55</td>
+            <td>80.75</td>
+          </tr>
+          <tr>
+            <td>Bitter Uncertainty</td>
+            <td>85.08</td>
+            <td>88.27</td>
+            <td>78.73</td>
+            <td>92.55</td>
+            <td>80.75</td>
+          </tr>
+          <tr>
+            <td>GPT-4o (2024-05-13)</td>
+            <td>84.6</td>
+            <td>96.6</td>
+            <td>70.4</td>
+            <td>86.5</td>
+            <td>84.9</td>
+          </tr>
+          <tr>
+            <td>Nvidia Nemotron-4-340B-Reward</td>
+            <td>92.0</td>
+            <td>95.8</td>
+            <td>87.1</td>
+            <td>91.5</td>
+            <td>93.6</td>
+          </tr>
+        </tbody>
+      </table>
+    </table-wrap>
+  </fig>
+  <p>One interpretation is that the length of responses in RewardBench
+  is well-enough correlated with user preference that the verbosity
+  penalty might be performing a sort of inadvertent reward hacking. In
+  “Chat Hard”, shorter responses seem to predict user preference. The
+  same might hold for Safety – the safest response, after all, has
+  length zero! The opposite relation holds for the plain Chat and
+  Reasoning categories, perhaps because longer responses are more likely
+  to contain useful chains of thought.</p>
+  <p>We also report the performance of training the baseline ArmoRM with
+  reward regressions given by our MLP Ensemble instead of its less
+  powerful regression layer. Oddly, this decreased performance across
+  every metric, suggesting that ArmoRM’s ridge regression may be better
+  generalizing to new data than our MLP Ensemble.</p>
+  <p>In sum, incorporating dimension-wise uncertainty into ArmoRM
+  produced modest improvements (and significant safety improvements)
+  across three implementations.</p>
+</sec>
+<sec id="discussion-nb-1">
+  <title>Discussion</title>
+  <p>Based on our results, multidimensional reward modeling appears to
+  be improved by the estimation of dimension-wise uncertainties. We have
+  shown that MLP Ensembles can be used to quantify this uncertainty. We
+  also presented three methods for incorporating uncertainty estimates
+  into the scalar compression of rewards, including a new framing of
+  reward modeling inspired by optimal transport theory. Rather
+  surprisingly, all three performed comparably.</p>
+  <p>The present work has a few shortcomings. Most glaringly, due to
+  compute constraints, we haven’t quantified the ‘uncertainty’ of our
+  reported accuracies. Anecdotally, performance of our models (and of
+  ArmoRM) remained near-identical across trainings, but we should
+  rigorously quantify this and report proper error bars.</p>
+  <p>It would also be instructive to perform further hyperparameter
+  training, particularly for the Wasserstein reward model.</p>
+  <p>We hope our results motivate further work on incorporating
+  uncertainty estimates into RLHF reward modeling. We particularly hope
+  that the more general framing of preference optimization afforded by
+  the Wasserstein reward model can inspire new approaches for aligning
+  LLMs with human values.</p>
+  <sec id="references-nb-1">
+    <title>References</title>
+  </sec>
+</sec>
+</body>
+
+
+
+<back>
+<fn-group>
+  <fn id="fn1-nb-1">
+    <label>1</label><p>The release of the newer generations of Llama 3.1
+    models has since upset ArmoRM’s lead. At the time of writing, it
+    ranks 18th in AllenAI’s RewardBench leaderboard and 8th among 8
+    billion parameter models.</p>
+  </fn>
+</fn-group>
+</back>
+
+
+</sub-article>
 
 </article>
