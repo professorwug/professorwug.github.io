@@ -22,7 +22,6 @@ bibliography: references.bib
 citation:
   container-title: Princeton Computer Science
 number-sections: true
-jupyter: murdo-zetteldev
 ---
 
 # Introduction
